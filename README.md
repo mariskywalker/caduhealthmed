@@ -23,8 +23,9 @@ O arquivo **`index.html`** na raiz evita erro `404 NOT_FOUND` ao acessar a URL s
 ### GitHub Pages
 
 1. Repositório → **Settings** → **Pages**
-2. **Build and deployment** → Source: **GitHub Actions**
-3. O workflow `.github/workflows/static.yml` publica automaticamente no push em `main`
+2. **Build and deployment** → Source: **Deploy from a branch**
+3. Branch: **main** / pasta **/ (root)**
+4. Salve e aguarde 1–2 min; acesse `https://mariskywalker.github.io/caduhealthmed/`
 
 ### Vercel
 
