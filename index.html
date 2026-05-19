@@ -409,8 +409,8 @@ p { font-size: 15px; line-height: 1.72; color: var(--t2); }
   width: 100%;
   max-width: 1180px;
   margin: 0 auto;
-  aspect-ratio: 1200 / 1080;
-  min-height: 920px;
+  aspect-ratio: 1200 / 1120;
+  min-height: 980px;
 }
 .prob-journey::before {
   content: '';
@@ -490,9 +490,9 @@ p { font-size: 15px; line-height: 1.72; color: var(--t2); }
 .prob-journey__stem {
   display: block;
   width: 0;
-  height: var(--stem-h, 36px);
-  border-left: 2px dashed color-mix(in oklab, var(--step-color) 72%, #94a3b8);
-  opacity: .7;
+  height: var(--stem-h, 48px);
+  border-left: 2px dashed color-mix(in oklab, var(--step-color) 78%, #94a3b8);
+  opacity: .75;
   flex-shrink: 0;
 }
 
@@ -502,8 +502,8 @@ p { font-size: 15px; line-height: 1.72; color: var(--t2); }
   flex-direction: column;
   align-items: center;
   text-align: center;
-  width: min(200px, 24vw);
-  padding: 0 4px;
+  width: min(188px, 22vw);
+  padding: 0 6px;
   background: none;
   border: none;
   box-shadow: none;
@@ -542,25 +542,26 @@ p { font-size: 15px; line-height: 1.72; color: var(--t2); }
   margin: 0;
 }
 
-/* acima / abaixo do nó, como na referência */
-.prob-journey__step--1 { --stem-h: 40px; z-index: 4; }
-.prob-journey__step--2 { --stem-h: 34px; z-index: 3; }
-.prob-journey__step--3 { --stem-h: 38px; z-index: 3; }
-.prob-journey__step--4 { --stem-h: 44px; z-index: 5; }
-.prob-journey__step--5 { --stem-h: 36px; z-index: 4; }
-.prob-journey__step--6 { --stem-h: 42px; z-index: 5; }
-.prob-journey__step--7 { --stem-h: 44px; z-index: 3; }
-.prob-journey__step--8 { --stem-h: 40px; z-index: 4; }
-.prob-journey__step--9 { --stem-h: 44px; z-index: 6; }
+/* acima / abaixo do nó — conforme Figma */
+.prob-journey__step--1 { --stem-h: 52px; z-index: 4; }
+.prob-journey__step--2 { --stem-h: 50px; z-index: 3; }
+.prob-journey__step--3 { --stem-h: 54px; z-index: 3; }
+.prob-journey__step--4 { --stem-h: 56px; z-index: 5; }
+.prob-journey__step--5 { --stem-h: 52px; z-index: 4; }
+.prob-journey__step--6 { --stem-h: 54px; z-index: 5; }
+.prob-journey__step--7 { --stem-h: 52px; z-index: 3; }
+.prob-journey__step--8 { --stem-h: 50px; z-index: 4; }
+.prob-journey__step--9 { --stem-h: 56px; z-index: 6; }
 
-/* leves desvios onde o percurso aperta */
-.prob-journey__step--2 .prob-journey__copy { transform: translateX(-14px); }
-.prob-journey__step--3 .prob-journey__copy { transform: translateX(10px); }
-.prob-journey__step--5 .prob-journey__copy { transform: translateX(-8px); }
-.prob-journey__step--7 .prob-journey__copy { transform: translateX(-32px); }
-.prob-journey__step--8 .prob-journey__copy { transform: translateX(36px); align-items: flex-start; text-align: left; }
-.prob-journey__step--8 .prob-journey__icon { align-self: flex-start; }
-.prob-journey__step--9 .prob-journey__copy { transform: translateX(6px); }
+.prob-journey__step--1 .prob-journey__copy { transform: translate(-18px, -4px); }
+.prob-journey__step--2 .prob-journey__copy { transform: translate(-28px, 6px); }
+.prob-journey__step--3 .prob-journey__copy { transform: translate(6px, 8px); }
+.prob-journey__step--4 .prob-journey__copy { transform: translate(-22px, -6px); }
+.prob-journey__step--5 .prob-journey__copy { transform: translate(14px, -8px); }
+.prob-journey__step--6 .prob-journey__copy { transform: translate(10px, -6px); }
+.prob-journey__step--7 .prob-journey__copy { transform: translate(-38px, 10px); }
+.prob-journey__step--8 .prob-journey__copy { transform: translate(42px, 12px); align-items: center; text-align: center; }
+.prob-journey__step--9 .prob-journey__copy { transform: translate(8px, -6px); }
 
 .prob-tl-footnote {
   margin-top: 2.5rem;
@@ -1512,13 +1513,13 @@ footer {
         </svg>
         <div class="prob-journey__steps">
 <article class="prob-journey__step prob-journey__step--1 prob-journey__step--above" style="left:10%;top:47.8%;--step-color:#93c5fd"><span class="prob-journey__node" style="background:#93c5fd">1</span><span class="prob-journey__stem" aria-hidden="true"></span><div class="prob-journey__copy"><span class="prob-journey__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h6M4 12h10M4 16h8M14 8l6 4-6 4V8z"/></svg></span><h3 class="prob-journey__title">Fragmentação do cuidado</h3><p class="prob-journey__desc">Clínicas, laudos, WhatsApp, planilhas e escolas sem fio condutor longitudinal.</p></div></article>
-<article class="prob-journey__step prob-journey__step--2 prob-journey__step--below" style="left:20.8%;top:57.8%;--step-color:#3b82f6"><span class="prob-journey__node" style="background:#3b82f6">2</span><span class="prob-journey__stem" aria-hidden="true"></span><div class="prob-journey__copy"><span class="prob-journey__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/><path d="M9 9h6"/></svg></span><h3 class="prob-journey__title">Operadora sem visão clínica</h3><p class="prob-journey__desc">A instituição parceira enxerga faturamento, mas não evolução, aderência ou desfecho assistencial.</p></div></article>
-<article class="prob-journey__step prob-journey__step--3 prob-journey__step--below" style="left:31.7%;top:68.9%;--step-color:#06b6d4"><span class="prob-journey__node" style="background:#06b6d4">3</span><span class="prob-journey__stem" aria-hidden="true"></span><div class="prob-journey__copy"><span class="prob-journey__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-10a6 6 0 10-12 0c0 4.8 6 10 6 10z"/><circle cx="12" cy="11" r="2.2"/></svg></span><h3 class="prob-journey__title">Sessões sem presença real</h3><p class="prob-journey__desc">Sessões faturadas sem evidência de comparecimento, check-in ou execução documentada.</p></div></article>
+<article class="prob-journey__step prob-journey__step--2 prob-journey__step--below" style="left:20.8%;top:57.8%;--step-color:#3b82f6"><span class="prob-journey__node" style="background:#3b82f6">2</span><span class="prob-journey__stem" aria-hidden="true"></span><div class="prob-journey__copy"><span class="prob-journey__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/><path d="M9 9h6"/></svg></span><h3 class="prob-journey__title">Operadora sem visão clínica</h3><p class="prob-journey__desc">A instituição percebe apenas faturamento, mas não evolução, aderência ou desfecho assistencial.</p></div></article>
+<article class="prob-journey__step prob-journey__step--3 prob-journey__step--below" style="left:31.7%;top:68.9%;--step-color:#06b6d4"><span class="prob-journey__node" style="background:#06b6d4">3</span><span class="prob-journey__stem" aria-hidden="true"></span><div class="prob-journey__copy"><span class="prob-journey__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-10a6 6 0 10-12 0c0 4.8 6 10 6 10z"/><circle cx="12" cy="11" r="2.2"/></svg></span><h3 class="prob-journey__title">Sessões sem presença real</h3><p class="prob-journey__desc">Sessões faturadas sem evidência de comparecimento, check-in ou evolução documentada.</p></div></article>
 <article class="prob-journey__step prob-journey__step--4 prob-journey__step--above" style="left:31.7%;top:34.4%;--step-color:#22c55e"><span class="prob-journey__node" style="background:#22c55e">4</span><span class="prob-journey__stem" aria-hidden="true"></span><div class="prob-journey__copy"><span class="prob-journey__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5M4 19h16M8 15l3-4 3 3 4-6"/></svg></span><h3 class="prob-journey__title">Frequência desalinhada</h3><p class="prob-journey__desc">Volume de sessões incompatível com evolução clínica registrada na rede credenciada.</p></div></article>
-<article class="prob-journey__step prob-journey__step--5 prob-journey__step--below" style="left:41.7%;top:53.3%;--step-color:#eab308"><span class="prob-journey__node" style="background:#eab308">5</span><span class="prob-journey__stem" aria-hidden="true"></span><div class="prob-journey__copy"><span class="prob-journey__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg></span><h3 class="prob-journey__title">Tratamentos sem progresso</h3><p class="prob-journey__desc">Planos longos sem metas mensuráveis, marcos clínicos ou desfecho assistencial claro.</p></div></article>
+<article class="prob-journey__step prob-journey__step--5 prob-journey__step--above" style="left:41.7%;top:53.3%;--step-color:#eab308"><span class="prob-journey__node" style="background:#eab308">5</span><span class="prob-journey__stem" aria-hidden="true"></span><div class="prob-journey__copy"><span class="prob-journey__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg></span><h3 class="prob-journey__title">Tratamentos sem progresso</h3><p class="prob-journey__desc">Planos longos sem metas mensuráveis, marcos clínicos ou desfecho assistencial claro.</p></div></article>
 <article class="prob-journey__step prob-journey__step--6 prob-journey__step--above" style="left:63.3%;top:33.3%;--step-color:#f97316"><span class="prob-journey__node" style="background:#f97316">6</span><span class="prob-journey__stem" aria-hidden="true"></span><div class="prob-journey__copy"><span class="prob-journey__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/></svg></span><h3 class="prob-journey__title">Auditoria reativa</h3><p class="prob-journey__desc">Controles manuais tardios, sempre depois do sinistro consolidado na carteira.</p></div></article>
-<article class="prob-journey__step prob-journey__step--7 prob-journey__step--below" style="left:68.3%;top:56.5%;--step-color:#fb7185"><span class="prob-journey__node" style="background:#fb7185">7</span><span class="prob-journey__stem" aria-hidden="true"></span><div class="prob-journey__copy"><span class="prob-journey__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 20v-6M12 20V8M18 20v-9"/><path d="M3 20h18"/></svg></span><h3 class="prob-journey__title">Família desconectada</h3><p class="prob-journey__desc">Baixa adesão familiar, pouca orientação entre sessões e comunicação fragmentada.</p></div></article>
-<article class="prob-journey__step prob-journey__step--8 prob-journey__step--below" style="left:78.3%;top:61.5%;--step-color:#f472b6"><span class="prob-journey__node" style="background:#f472b6">8</span><span class="prob-journey__stem" aria-hidden="true"></span><div class="prob-journey__copy"><span class="prob-journey__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16M6 16V8l6-4 6 4v8"/><path d="M9 12h6"/></svg></span><h3 class="prob-journey__title">Escola fora do fluxo</h3><p class="prob-journey__desc">Informações pedagógicas e comportamentais não entram na inteligência assistencial.</p></div></article>
+<article class="prob-journey__step prob-journey__step--7 prob-journey__step--below" style="left:67%;top:55%;--step-color:#fb7185"><span class="prob-journey__node" style="background:#fb7185">7</span><span class="prob-journey__stem" aria-hidden="true"></span><div class="prob-journey__copy"><span class="prob-journey__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 20v-6M12 20V8M18 20v-9"/><path d="M3 20h18"/></svg></span><h3 class="prob-journey__title">Família desconectada</h3><p class="prob-journey__desc">Baixa adesão familiar, pouca orientação entre sessões e comunicação fragmentada.</p></div></article>
+<article class="prob-journey__step prob-journey__step--8 prob-journey__step--below" style="left:79%;top:63%;--step-color:#f472b6"><span class="prob-journey__node" style="background:#f472b6">8</span><span class="prob-journey__stem" aria-hidden="true"></span><div class="prob-journey__copy"><span class="prob-journey__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16M6 16V8l6-4 6 4v8"/><path d="M9 12h6"/></svg></span><h3 class="prob-journey__title">Escola fora do fluxo</h3><p class="prob-journey__desc">Informações pedagógicas e comportamentais não entram na inteligência assistencial.</p></div></article>
 <article class="prob-journey__step prob-journey__step--9 prob-journey__step--above" style="left:88.3%;top:40%;--step-color:#a855f7"><span class="prob-journey__node" style="background:#a855f7">9</span><span class="prob-journey__stem" aria-hidden="true"></span><div class="prob-journey__copy"><span class="prob-journey__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 00-6 6v1H5v7h14v-7h-1V9a6 6 0 00-6-6z"/><path d="M9 18v2M15 18v2M8 12h8"/></svg></span><h3 class="prob-journey__title">Sem inteligência longitudinal</h3><p class="prob-journey__desc">A operadora não consegue prever risco, coordenar cuidado ou tomar decisão baseada em trajetória.</p></div></article>
 </div>
       </div>
