@@ -2,17 +2,36 @@
 
 Landing page institucional (HTML estático) para o ecossistema CADU / operadoras de saúde.
 
-## Arquivo principal
-
-Abra `cadu-unimed-bh.html` no navegador ou sirva localmente:
+## Abrir localmente
 
 ```bash
 python3 -m http.server 8766
 ```
 
-Depois acesse: http://localhost:8766/cadu-unimed-bh.html
+- http://localhost:8766/
+- http://localhost:8766/cadu-unimed-bh.html
+
+## Deploy
+
+| Plataforma | URL |
+|------------|-----|
+| **Vercel** (raiz do projeto) | `https://seu-projeto.vercel.app/` |
+| **GitHub Pages** | `https://mariskywalker.github.io/caduhealthmed/` |
+
+O arquivo **`index.html`** na raiz evita erro `404 NOT_FOUND` ao acessar a URL sem nome de arquivo.
+
+### GitHub Pages
+
+1. Repositório → **Settings** → **Pages**
+2. **Build and deployment** → Source: **GitHub Actions**
+3. O workflow `.github/workflows/static.yml` publica automaticamente no push em `main`
+
+### Vercel
+
+Conecte o repositório; não é necessário framework. A raiz já contém `index.html`.
 
 ## Estrutura
 
-- `cadu-unimed-bh.html` — página completa (HTML + CSS + JS)
+- `index.html` — mesma página que `cadu-unimed-bh.html` (entrada para hosting)
+- `cadu-unimed-bh.html` — alias legado
 - `assets/` — imagens dos fundadores e ícones
