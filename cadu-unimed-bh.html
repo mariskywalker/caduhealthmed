@@ -1,0 +1,1779 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#fafaf8"/>
+<title>CADU, Infraestrutura Longitudinal para Operadoras de Saúde</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,600,700,900&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #fafaf8;
+  --bg-alt: #f4f2ee;
+  --white: #fff;
+  --black: #0e0e0c;
+  --red: #e8351a;
+  --red-soft: #fff1ee;
+  --brand: #f74e45;
+  --cadu-rose: #eeb5a0;
+  --cadu-rose-3: #f2c9ba;
+  --orange: #f5a623;
+  --green: #2db07a;
+  --cadu-green: #1d9e75;
+  --green-soft: #edfaf3;
+  --blue: #3a7bd5;
+  --blue-soft: #eef3fd;
+  --purple: #7c6fd6;
+  --text: #0e0e0c;
+  --text-2: #575750;
+  --text-3: #ababab;
+  --text-min: 16px;
+  --border: #00000012;
+  --border-md: #0000001c;
+  --shadow-sm: 0 1px 3px #0000000d, 0 4px 12px #0000000f;
+  --shadow-md: 0 4px 24px #00000014, 0 1px 4px #0000000a;
+  --shadow-lg: 0 12px 48px #0000001a, 0 2px 8px #0000000d;
+  --radius: 16px;
+  --radius-lg: 24px;
+  --font-logo: "Montserrat Alternates", -apple-system, system-ui, sans-serif;
+  --font-mono: "DM Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  /* legacy aliases (conteúdo/inline) */
+  --bg-0: var(--bg);
+  --bg-1: var(--bg-alt);
+  --bg-2: #fff;
+  --card: var(--white);
+  --t1: var(--text);
+  --t2: var(--text-2);
+  --t3: var(--text-3);
+  --cyan: var(--red);
+  --cyan-a: var(--red-soft);
+  --cyan-glow: #e8351a14;
+  --border-hi: color-mix(in oklab, var(--red) 22%, var(--border-md));
+  --amber: var(--orange);
+  /* linha / cards, mesmo vocabulário da Jornada */
+  --grad-line: linear-gradient(135deg, #eeb5a0 0%, #e8351a 28%, #f74e45 52%, #f5a623 78%, #1d9e75 100%);
+  --grad-line-h: linear-gradient(90deg, #eeb5a0 0%, #e8351a 25%, #f74e45 55%, #f5a623 78%, #1d9e75 100%);
+  --line-w: 4px;
+  --ui-radius: 14px;
+  --ui-pad: 16px 18px;
+}
+
+html { scroll-behavior: smooth; font-size: max(100%, 16px); }
+
+body {
+  font-family: 'Satoshi', sans-serif;
+  background: var(--bg-0);
+  color: var(--t1);
+  font-size: max(16px, max(1rem, var(--text-min)));
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+section { position: relative; }
+
+.grid-bg {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(232,53,26,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(232,53,26,.04) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+.grid-bg::after {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, transparent 20%, var(--bg-0) 75%);
+}
+
+.glow {
+  position: absolute; border-radius: 50%;
+  filter: blur(90px); pointer-events: none;
+}
+
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+  height: 60px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px;
+  background: rgba(250,250,248,0.88);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-brand { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+.nav-c {
+  width: 30px; height: 30px;
+  background: var(--cyan); border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 800; color: var(--bg-0);
+  flex-shrink: 0;
+}
+.nav-wordmark { font-size: 16px; font-weight: 700; color: var(--t1); }
+.nav-for {
+  font-size: 11px; font-weight: 500; color: var(--t3);
+  padding: 3px 9px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  margin-left: 4px;
+}
+
+.nav-links { display: flex; gap: 1.75rem; list-style: none; }
+.nav-links a {
+  font-size: 12px; font-weight: 500; color: var(--t2);
+  text-decoration: none; transition: color .18s;
+}
+.nav-links a:hover { color: var(--t1); }
+
+.nav-cta {
+  font-size: 12px; font-weight: 600;
+  padding: 8px 18px; border-radius: 8px;
+  background: var(--cyan); color: var(--bg-0); text-decoration: none;
+  box-shadow: 0 2px 12px #e8351a47;
+  transition: opacity .18s;
+}
+.nav-cta:hover { opacity: .85; }
+
+/* LAYOUT */
+.wrap { max-width: 1320px; margin: 0 auto; padding: 0 48px; position: relative; z-index: 1; }
+
+.section-label {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--cyan);
+  margin-bottom: 20px;
+}
+.section-label::before {
+  content: ''; width: 22px; height: 3px;
+  background: var(--grad-line-h); border-radius: 2px;
+}
+
+h1 {
+  font-size: clamp(38px, 4.8vw, 70px);
+  font-weight: 800; letter-spacing: -.03em; line-height: 1.08;
+}
+h2 {
+  font-size: clamp(28px, 3.2vw, 50px);
+  font-weight: 700; letter-spacing: -.025em; line-height: 1.12;
+}
+h3 { font-size: 18px; font-weight: 600; line-height: 1.3; }
+
+em { font-style: normal; color: var(--cyan); }
+
+p { font-size: 15px; line-height: 1.72; color: var(--t2); }
+
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--ui-radius);
+  padding: 28px;
+  box-shadow: var(--shadow-sm);
+  transition: border-color .22s, transform .22s, box-shadow .22s;
+}
+.card:hover {
+  border-color: var(--border-md);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 22px; border-radius: 10px;
+  font-size: 13px; font-weight: 600; font-family: 'Satoshi', sans-serif;
+  text-decoration: none; border: none; cursor: pointer;
+  transition: all .2s;
+}
+.btn-p { background: var(--cyan); color: var(--bg-0); }
+.btn-p:hover { opacity: .85; transform: translateY(-1px); }
+.btn-s {
+  background: rgba(255,255,255,0.05);
+  color: var(--t1); border: 1px solid var(--border);
+}
+.btn-s:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,.15); }
+
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; padding: 4px 10px; border-radius: 100px;
+}
+.b-cyan { background: var(--red-soft); color: var(--red); border: 1px solid #e8351a22; }
+.b-green { background: var(--green-soft); color: var(--cadu-green); border: 1px solid #1d9e7522; }
+.b-amber { background: #fff8ec; color: #b45309; border: 1px solid #f5a62333; }
+.b-red { background: var(--red-soft); color: var(--red); border: 1px solid #e8351a22; }
+
+
+
+.fade { opacity: 0; transform: translateY(18px); transition: opacity .65s ease, transform .65s ease; }
+.fade.in { opacity: 1; transform: translateY(0); }
+.divider { height: 1px; background: var(--border); }
+
+/* MARQUEE */
+.marquee-wrap { overflow: hidden; padding: 16px 0; }
+
+.marquee-track {
+  display: flex; gap: 28px; width: max-content;
+  animation: marquee 35s linear infinite;
+}
+
+.marquee-item {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--t3);
+  white-space: nowrap; display: flex; align-items: center; gap: 10px;
+}
+.marquee-item::before { content: '·'; color: var(--cyan); }
+
+@keyframes marquee { to { transform: translateX(-50%); } }
+
+/* HERO */
+#hero {
+  min-height: 100vh;
+  display: flex; align-items: center;
+  position: relative; overflow: hidden;
+  padding: 88px 0 72px;
+  background: var(--white);
+}
+#hero .grid-bg { opacity: .35; }
+#hero .glow { display: none; }
+
+.hero-inner {
+  max-width: 1080px; margin: 0 auto; padding: 0 48px;
+  width: 100%;
+  display: flex; flex-direction: column; align-items: flex-start;
+  gap: 0;
+  position: relative; z-index: 1;
+}
+
+.hero-logo {
+  font-family: var(--font-logo);
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-weight: 900;
+  letter-spacing: -.04em;
+  color: var(--brand);
+  line-height: 1;
+  margin-bottom: 1.25rem;
+}
+
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 600; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--text-3);
+  margin-bottom: 2rem;
+  padding: 7px 14px 7px 10px;
+  background: var(--white);
+  border: 1px solid var(--border-md);
+  border-radius: 100px;
+  box-shadow: 0 1px 4px #00000008;
+}
+
+.live-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--brand);
+  flex-shrink: 0;
+  animation: blink 2s ease-in-out infinite;
+}
+@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
+
+.hero-title {
+  margin-bottom: 1.35rem;
+  max-width: 14em;
+  font-size: clamp(2.35rem, 5.2vw, 3.65rem);
+  line-height: 1.06;
+  letter-spacing: -.035em;
+  color: var(--black);
+}
+.hero-title em { color: var(--brand); }
+
+.hero-sub {
+  font-size: clamp(1rem, 1.35vw, 1.125rem);
+  line-height: 1.65; color: var(--text-2);
+  max-width: 42rem; margin-bottom: 2rem;
+}
+
+.hero-ctas {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  margin-bottom: 3rem;
+}
+#hero .btn-p {
+  background: var(--brand);
+  color: var(--white);
+  border-radius: 999px;
+  padding: 14px 26px;
+  font-size: 14px;
+  box-shadow: 0 8px 28px #f74e4540;
+}
+#hero .btn-p:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 32px #f74e454d;
+}
+#hero .btn-s {
+  background: var(--white);
+  color: var(--text);
+  border: 1px solid var(--border-md);
+  border-radius: 999px;
+  padding: 14px 24px;
+  font-size: 14px;
+  box-shadow: 0 1px 4px #00000008;
+}
+#hero .btn-s:hover {
+  background: var(--bg);
+  border-color: #0000002a;
+}
+
+.hero-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  width: 100%;
+  max-width: 920px;
+}
+
+.hero-metric {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 1.15rem 1.25rem 1rem;
+  box-shadow: 0 4px 20px #0000000a, 0 1px 3px #00000006;
+  display: flex; flex-direction: column; gap: .35rem;
+  border-top-width: 3px;
+  border-top-style: solid;
+}
+.hero-metric--green { border-top-color: var(--cadu-green); }
+.hero-metric--amber { border-top-color: var(--orange); }
+
+.hero-metric__label {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--text-3);
+}
+.hero-metric__val {
+  font-size: clamp(1.75rem, 2.8vw, 2.125rem);
+  font-weight: 800;
+  letter-spacing: -.03em;
+  color: var(--black);
+  line-height: 1.1;
+}
+.hero-metric__val .c { color: var(--brand); }
+.hero-metric__desc {
+  font-size: 12px; color: var(--text-3);
+  line-height: 1.45; margin-bottom: .65rem;
+}
+.hero-metric__bar {
+  height: 4px; border-radius: 999px;
+  background: #0000000a; overflow: hidden; margin-top: auto;
+}
+.hero-metric__bar span {
+  display: block; height: 100%; border-radius: inherit;
+}
+.hero-metric--green .hero-metric__bar span { background: var(--cadu-green); }
+.hero-metric--amber .hero-metric__bar span { background: var(--orange); }
+
+.hero-trust {
+  margin-top: 1rem;
+  font-size: 12px; font-weight: 600;
+  color: var(--text-3);
+  letter-spacing: .02em;
+}
+
+
+/* ─── SECTION 2: PROBLEMA ─────────────────── */
+
+#problema {
+  padding: 110px 0 100px;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  overflow: visible;
+}
+
+.problema-intro { max-width: 720px; margin-bottom: 2rem; }
+.problema-intro p { max-width: 560px; margin-top: 20px; color: var(--t2); line-height: 1.65; }
+
+.prob-tl-wrap {
+  max-width: 1280px;
+  margin: 3.5rem auto 0;
+  position: relative;
+  overflow: visible;
+  padding: 0 clamp(1.25rem, 4vw, 3rem);
+}
+
+.prob-journey {
+  position: relative;
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  aspect-ratio: 1200 / 1080;
+  min-height: 920px;
+}
+.prob-journey::before {
+  content: '';
+  position: absolute;
+  inset: -8% -6%;
+  background:
+    radial-gradient(ellipse 42% 28% at 12% 18%, rgba(147,197,253,.14), transparent 58%),
+    radial-gradient(ellipse 38% 30% at 88% 72%, rgba(168,85,247,.08), transparent 55%),
+    radial-gradient(ellipse 50% 35% at 48% 50%, rgba(34,197,94,.05), transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.prob-journey__svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  overflow: visible;
+}
+.prob-journey__svg .prob-path-halo {
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 20;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: .9;
+  filter: drop-shadow(0 4px 16px rgba(0,0,0,.05));
+}
+.prob-journey__svg .prob-path-seg {
+  fill: none;
+  stroke-width: 11;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: .92;
+}
+
+.prob-journey__steps {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+.prob-journey__step {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: max-content;
+  max-width: min(220px, 26vw);
+  z-index: 3;
+}
+.prob-journey__step--above { flex-direction: column-reverse; }
+.prob-journey__step--below { flex-direction: column; }
+
+.prob-journey__node {
+  position: relative;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -.02em;
+  border: 3px solid #fff;
+  box-shadow: 0 2px 12px rgba(0,0,0,.12), 0 0 0 4px color-mix(in oklab, var(--step-color) 20%, transparent);
+  z-index: 5;
+}
+
+.prob-journey__stem {
+  display: block;
+  width: 0;
+  height: var(--stem-h, 36px);
+  border-left: 2px dashed color-mix(in oklab, var(--step-color) 72%, #94a3b8);
+  opacity: .7;
+  flex-shrink: 0;
+}
+
+.prob-journey__copy {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: min(200px, 24vw);
+  padding: 0 4px;
+  background: none;
+  border: none;
+  box-shadow: none;
+  pointer-events: none;
+  z-index: 4;
+}
+.prob-journey__icon {
+  display: block;
+  width: 28px;
+  height: 28px;
+  margin-bottom: 8px;
+  color: var(--step-color);
+  flex-shrink: 0;
+}
+.prob-journey__icon svg {
+  width: 100%;
+  height: 100%;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.85;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.prob-journey__title {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  color: var(--t1);
+  line-height: 1.28;
+  margin: 0 0 5px;
+}
+.prob-journey__desc {
+  font-size: 11.5px;
+  line-height: 1.48;
+  color: var(--t2);
+  margin: 0;
+}
+
+/* acima / abaixo do nó, como na referência */
+.prob-journey__step--1 { --stem-h: 40px; z-index: 4; }
+.prob-journey__step--2 { --stem-h: 34px; z-index: 3; }
+.prob-journey__step--3 { --stem-h: 38px; z-index: 3; }
+.prob-journey__step--4 { --stem-h: 44px; z-index: 5; }
+.prob-journey__step--5 { --stem-h: 36px; z-index: 4; }
+.prob-journey__step--6 { --stem-h: 42px; z-index: 5; }
+.prob-journey__step--7 { --stem-h: 44px; z-index: 3; }
+.prob-journey__step--8 { --stem-h: 40px; z-index: 4; }
+.prob-journey__step--9 { --stem-h: 44px; z-index: 6; }
+
+/* leves desvios onde o percurso aperta */
+.prob-journey__step--2 .prob-journey__copy { transform: translateX(-14px); }
+.prob-journey__step--3 .prob-journey__copy { transform: translateX(10px); }
+.prob-journey__step--5 .prob-journey__copy { transform: translateX(-8px); }
+.prob-journey__step--7 .prob-journey__copy { transform: translateX(-32px); }
+.prob-journey__step--8 .prob-journey__copy { transform: translateX(36px); align-items: flex-start; text-align: left; }
+.prob-journey__step--8 .prob-journey__icon { align-self: flex-start; }
+.prob-journey__step--9 .prob-journey__copy { transform: translateX(6px); }
+
+.prob-tl-footnote {
+  margin-top: 2.5rem;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--t3);
+}
+
+@media (max-width: 960px) {
+  .prob-journey {
+    aspect-ratio: auto;
+    min-height: 0;
+    padding: 0;
+  }
+  .prob-journey::before { display: none; }
+  .prob-journey__svg { display: none; }
+  .prob-journey__steps {
+    position: static;
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+    padding: 0 .25rem;
+  }
+  .prob-journey__step {
+    position: static;
+    transform: none;
+    width: auto;
+    max-width: none;
+    flex-direction: row !important;
+    align-items: flex-start;
+    gap: 1rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .prob-journey__step:last-child { border-bottom: none; }
+  .prob-journey__stem { display: none; }
+  .prob-journey__node {
+    flex-shrink: 0;
+  }
+  .prob-journey__copy {
+    width: auto !important;
+    max-width: none;
+    text-align: left !important;
+    transform: none !important;
+    align-items: flex-start !important;
+    flex: 1;
+    padding: 0;
+  }
+  .prob-journey__icon { align-self: flex-start !important; }
+}
+
+/* ─── SECTION 3: PLATAFORMA ──────────────── */
+
+#plataforma { padding: 120px 0; }
+
+.plataforma-inner {
+  display: grid; grid-template-columns: 50% 1fr;
+  gap: 72px; align-items: center;
+}
+
+.pillars { display: flex; flex-direction: column; gap: 10px; margin-top: 36px; }
+
+.pillar {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding: var(--ui-pad);
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--ui-radius);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow .22s, transform .22s, border-color .22s;
+}
+.pillar:hover {
+  border-color: var(--border-md);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.pillar-num {
+  width: 36px; height: 36px; flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--white);
+  border: 3px solid var(--cyan);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800; color: var(--cyan);
+  box-shadow: 0 0 0 5px rgba(232,53,26,.08), var(--shadow-sm);
+}
+
+.pillar-title { font-size: 13px; font-weight: 600; color: var(--t1); margin-bottom: 3px; }
+.pillar-desc { font-size: 12px; color: var(--t3); line-height: 1.5; }
+
+
+.orbit-wrap {
+  --orbit-size: min(520px, 100%);
+  position: relative;
+  width: var(--orbit-size);
+  height: var(--orbit-size);
+  max-width: 520px;
+  margin: 0 auto;
+  flex-shrink: 0;
+}
+
+.orbit-ring { display: none; }
+
+.orbit-path {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none; z-index: 0;
+}
+
+.orbit-core {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 92px; height: 92px; border-radius: 50%;
+  background: var(--white);
+  border: 3px solid var(--cyan);
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; z-index: 10;
+  box-shadow: 0 0 0 10px rgba(232,53,26,.1), 0 0 40px rgba(232,53,26,.18), var(--shadow-md);
+}
+.orbit-core-label { font-size: 15px; font-weight: 800; color: var(--cyan); }
+.orbit-core-sub { font-size: 8px; color: var(--t3); text-align: center; margin-top: 2px; line-height: 1.25; }
+
+.onode {
+  --r: 132px;
+  --a: 0deg;
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 76px; height: 76px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--ui-radius);
+  box-shadow: var(--shadow-sm);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 4px;
+  text-align: center;
+  transition: box-shadow .22s, transform .22s, border-color .22s;
+  z-index: 5;
+  cursor: default;
+  transform: translate(-50%, -50%) rotate(var(--a)) translateY(calc(-1 * var(--r))) rotate(calc(-1 * var(--a)));
+}
+.onode--outer { --r: 205px; z-index: 4; }
+.onode:hover {
+  border-color: var(--border-md);
+  box-shadow: var(--shadow-md);
+  transform: translate(-50%, -50%) rotate(var(--a)) translateY(calc(-1 * var(--r))) rotate(calc(-1 * var(--a))) translateY(-3px);
+}
+.onode-icon { font-size: 20px; line-height: 1; }
+.onode-label { font-size: 10px; font-weight: 700; color: var(--t2); line-height: 1.2; padding: 0 4px; }
+
+.agents-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 14px; margin-top: 56px;
+}
+
+.agent-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--ac, var(--border));
+  border-radius: var(--ui-radius);
+  padding: 22px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow .22s, transform .22s, border-color .22s;
+  position: relative; overflow: hidden;
+}
+.agent-card:hover {
+  border-color: var(--border-md);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.agent-icon {
+  width: 40px; height: 40px; border-radius: 9px;
+  background: var(--ai, rgba(232,53,26,.1));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; margin-bottom: 14px;
+}
+
+.agent-name { font-size: 13px; font-weight: 700; color: var(--t1); margin-bottom: 4px; }
+.agent-role { font-size: 11px; color: var(--t3); margin-bottom: 12px; font-weight: 500; }
+
+.agent-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 12px; }
+.agent-tag {
+  font-size: 9px; font-weight: 600; letter-spacing: .04em;
+  padding: 2px 7px; border-radius: 4px;
+  background: rgba(255,255,255,.05); color: var(--t3);
+}
+
+.agent-desc { font-size: 11px; color: var(--t3); line-height: 1.55; }
+
+/* ─── JORNADA: linha do tempo horizontal ─── */
+.tl-wrap { margin-top: 56px; overflow: visible; }
+
+.tl-scroll {
+  overflow-x: auto;
+  overflow-y: visible;
+  margin: 0 -2.5rem;
+  padding: 14px 2.5rem 1.5rem;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(232,53,26,.35) transparent;
+}
+.tl-scroll::-webkit-scrollbar { height: 6px; }
+.tl-scroll::-webkit-scrollbar-thumb {
+  background: rgba(232,53,26,.35);
+  border-radius: 100px;
+}
+
+.tl-track {
+  position: relative;
+  min-width: 1280px;
+  height: 420px;
+  padding: 10px 12px;
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+.tl-path-svg {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+  height: 88px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.tl-steps {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  height: 100%;
+  gap: 8px;
+}
+
+.tl-step {
+  flex: 1;
+  min-width: 0;
+  max-width: 148px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.tl-step--top { justify-content: flex-end; }
+.tl-step--bottom { justify-content: flex-start; }
+
+.tl-step--top .tl-spacer { order: 1; flex: 1 1 auto; }
+.tl-step--top .tl-card { order: 2; }
+.tl-step--top .tl-connector { order: 3; }
+.tl-step--top .tl-node { order: 4; }
+
+.tl-step--bottom .tl-spacer { order: 1; flex: 1 1 auto; }
+.tl-step--bottom .tl-node { order: 2; }
+.tl-step--bottom .tl-connector { order: 3; }
+.tl-step--bottom .tl-card { order: 4; }
+
+.tl-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 14px 13px;
+  box-shadow: var(--shadow-sm);
+  width: 100%;
+  text-align: left;
+  transition: box-shadow .22s, transform .22s, border-color .22s;
+}
+.tl-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+  border-color: var(--border-md);
+}
+
+.tl-step--top .tl-card { margin-bottom: 0; }
+.tl-step--bottom .tl-card { margin-top: 0; }
+
+.tl-card-num {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin-bottom: 6px;
+}
+.tl-step--top:nth-child(1) .tl-card-num,
+.tl-step--top:nth-child(3) .tl-card-num,
+.tl-step--top:nth-child(5) .tl-card-num { color: #e8351a; }
+.tl-step--top:nth-child(7) .tl-card-num { color: #f5a623; }
+.tl-step--bottom:nth-child(2) .tl-card-num { color: #f74e45; }
+.tl-step--bottom:nth-child(4) .tl-card-num { color: #e8351a; }
+.tl-step--bottom:nth-child(6) .tl-card-num { color: #f74e45; }
+.tl-step--bottom:nth-child(8) .tl-card-num.alert { color: var(--amber); }
+.tl-step--top:nth-child(9) .tl-card-num { color: #f5a623; }
+.tl-card-num.alert { color: var(--amber); }
+.tl-card-num.done { color: var(--cadu-green); }
+
+.tl-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--t1);
+  line-height: 1.25;
+  margin-bottom: 5px;
+}
+
+.tl-card-desc {
+  font-size: 11px;
+  color: var(--t2);
+  line-height: 1.5;
+}
+
+.tl-connector {
+  width: 2px;
+  flex-shrink: 0;
+  background: linear-gradient(to bottom, var(--border-md), var(--cyan));
+  border-radius: 2px;
+}
+.tl-step--top .tl-connector {
+  height: 36px;
+  margin: 8px 0 0;
+  background: linear-gradient(to bottom, rgba(232,53,26,.35), var(--cyan));
+}
+.tl-step--bottom .tl-connector {
+  height: 36px;
+  margin: 0 0 8px;
+  background: linear-gradient(to top, rgba(232,53,26,.35), var(--cyan));
+}
+
+.tl-node {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--white);
+  border: 3px solid var(--cyan);
+  box-shadow: 0 0 0 6px rgba(232,53,26,.08), var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--cyan);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+  margin: 8px 0;
+}
+.tl-node.alert {
+  border-color: var(--amber);
+  color: var(--amber);
+  box-shadow: 0 0 0 6px rgba(245,158,11,.12), var(--shadow-sm);
+  font-size: 16px;
+}
+.tl-node.done {
+  border-color: var(--cadu-green);
+  color: var(--cadu-green);
+  box-shadow: 0 0 0 6px rgba(29,158,117,.12), var(--shadow-sm);
+}
+
+.tl-spacer {
+  flex: 1;
+  min-height: 46px;
+}
+
+@media (max-width: 960px) {
+  .tl-track { min-width: 1100px; height: 400px; }
+  .tl-step { max-width: 128px; }
+}
+
+.ia-callout {
+  background: linear-gradient(145deg, #fff8ec 0%, #fff 100%);
+  border: 1px solid #f5a62344;
+  border-radius: var(--ui-radius);
+  padding: 1.5rem 1.75rem;
+  box-shadow: var(--shadow-md);
+  position: relative; overflow: hidden;
+}
+.ia-callout::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 3px; background: linear-gradient(90deg, #f5a623, #e8351a);
+}
+
+#dashboards { background: var(--bg-alt); }
+.kpi-row {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 1px; background: var(--border);
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  overflow: hidden; margin-top: 2.5rem; box-shadow: var(--shadow-sm);
+}
+.kpi { background: var(--white); padding: 1.35rem 1rem; }
+.kpi-val { color: var(--black); font-weight: 900; }
+.kpi-lbl { font-size: 16px; color: var(--text-3); font-weight: 600; }
+.kpi-chg.up { color: var(--cadu-green); }
+.kpi-chg.dn { color: var(--red); }
+
+.dash-board {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 1rem;
+  margin-top: 1.25rem;
+  align-items: start;
+}
+.dash-primary {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.35rem 1.5rem 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+.chart-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: .75rem;
+}
+.chart-title { font-size: 18px; font-weight: 800; color: var(--t1); letter-spacing: -.02em; }
+.chart-sub { font-size: 12px; color: var(--t3); margin-top: 4px; line-height: 1.45; }
+.chart-canvas-wrap { position: relative; width: 100%; }
+.chart-canvas-wrap--lg { height: 280px; }
+.chart-canvas-wrap--md { height: 240px; }
+.chart-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+.chart-subcard {
+  border-radius: var(--radius-lg);
+  padding: 1px;
+  box-shadow: var(--shadow-sm);
+}
+.chart-subcard--teal {
+  background: linear-gradient(145deg, rgba(45,212,191,.35), rgba(45,212,191,.08), transparent);
+}
+.chart-subcard--amber {
+  background: linear-gradient(145deg, rgba(251,191,36,.4), rgba(251,113,133,.12), transparent);
+}
+.chart-subcard-inner {
+  background: rgba(255,255,255,.82);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,.7);
+  border-radius: calc(var(--radius-lg) - 1px);
+  padding: 14px 16px 10px;
+}
+.chart-subcard-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.chart-pill {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 5px 10px;
+  border-radius: 100px;
+  font-variant-numeric: tabular-nums;
+}
+.chart-pill--teal {
+  color: #065f46;
+  background: #ecfdf5;
+  border: 1px solid rgba(16,185,129,.25);
+}
+.chart-pill--amber {
+  color: #78350f;
+  background: #fffbeb;
+  border: 1px solid rgba(245,158,11,.28);
+}
+.dash-side .alerts-panel { margin-top: 0; height: 100%; }
+
+/* Longitudinal Engine (foto3) */
+#longitudinal-engine {
+  background: var(--black);
+  border-top: 1px solid #ffffff10;
+  border-bottom: 1px solid #ffffff10;
+  padding: 120px 0;
+}
+#longitudinal-engine .section-label { color: #ffffff52; }
+#longitudinal-engine .section-label::before { background: linear-gradient(90deg, #f74e45, transparent); }
+#longitudinal-engine h2 { color: #fff; }
+#longitudinal-engine h2 em { color: #f74e45; }
+#longitudinal-engine > .wrap > .fade > p { color: #ffffff85; max-width: 560px; }
+.engine-timeline { margin-top: 3rem; position: relative; }
+.engine-spine {
+  position: absolute; left: 0; right: 0; top: 50%;
+  transform: translateY(-50%);
+  height: 3px; border-radius: 3px; pointer-events: none; z-index: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(247,78,69,.2) 6%, rgba(247,78,69,.55) 24%, #f74e45 50%, rgba(247,78,69,.5) 76%, rgba(247,78,69,.15) 94%, transparent 100%);
+  box-shadow: 0 0 14px rgba(247,78,69,.45), 0 0 32px rgba(247,78,69,.2);
+}
+.engine-nodes {
+  display: flex; position: relative; z-index: 1;
+  overflow-x: auto; padding: 1rem 0; scrollbar-width: thin;
+  scrollbar-color: rgba(247,78,69,.4) transparent;
+}
+.engine-nodes::-webkit-scrollbar { height: 5px; }
+.engine-nodes::-webkit-scrollbar-thumb { background: rgba(247,78,69,.4); border-radius: 100px; }
+.engine-node {
+  flex: 1; min-width: 118px;
+  display: grid; grid-template-rows: 1fr auto 1fr;
+  justify-items: center; padding: 0 4px;
+}
+.engine-node-top {
+  grid-row: 1; width: 100%; text-align: center;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: flex-end; gap: 4px; padding-bottom: 8px;
+}
+.engine-node-dot {
+  grid-row: 2; width: 10px; height: 10px; border-radius: 50%;
+  border: 2px solid #ffffff24; background: var(--black); flex-shrink: 0;
+}
+.engine-node-date {
+  font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+  color: #ffffff38; letter-spacing: .06em;
+}
+.engine-node-label {
+  font-size: 12px; color: #ffffff73; line-height: 1.35; max-width: 108px;
+}
+.engine-node.active .engine-node-dot {
+  background: var(--cadu-green); border-color: var(--cadu-green);
+  box-shadow: 0 0 0 4px rgba(29,158,117,.22);
+}
+.engine-node.active .engine-node-label { color: #fff; }
+.engine-node.alert .engine-node-dot { background: var(--orange); border-color: var(--orange); }
+.engine-node.alert .engine-node-label { color: var(--orange); }
+.engine-badge {
+  display: inline-block; font-family: var(--font-mono);
+  font-size: 9px; letter-spacing: .08em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 100px; margin-top: 4px; font-weight: 700;
+}
+.engine-badge--progress { background: rgba(29,158,117,.22); color: #7dffc8; }
+.engine-badge--alert { background: rgba(245,166,35,.18); color: var(--orange); }
+.engine-ai-card {
+  margin-top: 2.5rem;
+  background: #ffffff08;
+  border: 1px solid #ffffff12;
+  border-radius: var(--radius-lg);
+  padding: 1.5rem 1.75rem;
+  display: flex; align-items: flex-start; gap: 16px;
+}
+.engine-ai-ico {
+  width: 40px; height: 40px; background: #ffffff10;
+  border: 1px solid #ffffff18; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.engine-ai-lbl {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em;
+  text-transform: uppercase; color: #f74e45; margin-bottom: 6px; font-weight: 700;
+}
+.engine-ai-body { font-size: 14px; color: #ffffff70; line-height: 1.65; }
+.engine-ai-body strong { color: #fff; font-weight: 800; }
+
+/* Time / fundadores (foto2) */
+#time-fundadores {
+  padding: 120px 0;
+  background: linear-gradient(180deg, color-mix(in oklab, var(--red-soft) 58%, var(--bg)) 0%, var(--bg-alt) 55%, var(--bg-alt) 100%);
+  border-top: 1px solid var(--border);
+}
+#time-fundadores .section-label { color: var(--red); }
+.founders-grid {
+  display: flex; flex-direction: column; gap: 1.35rem;
+  max-width: 820px; margin: 3rem auto 0;
+}
+.founder-card {
+  display: flex; align-items: flex-start; gap: 1.5rem;
+  padding: 1.65rem 1.65rem 1.75rem 1.65rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-md);
+  box-shadow: var(--shadow-sm);
+  background: linear-gradient(125deg, color-mix(in oklab, var(--red) 7%, #fff) 0%, #fff 42%, color-mix(in oklab, var(--bg-alt) 35%, #fff) 100%);
+  position: relative; overflow: visible;
+  transition: box-shadow .22s, transform .22s, border-color .22s;
+}
+.founder-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px;
+  border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+  background: linear-gradient(180deg, #eeb5a0 0%, #e8351a 35%, #f74e45 65%, #f5a623 100%);
+}
+.founder-card:hover {
+  box-shadow: var(--shadow-md); transform: translateY(-3px);
+  border-color: color-mix(in oklab, var(--red) 22%, var(--border-md));
+}
+.founder-card-visual { flex-shrink: 0; padding-left: 4px; }
+.founder-avatar {
+  width: 88px; height: 88px; border-radius: 50%;
+  overflow: hidden; flex-shrink: 0;
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--red) 16%, transparent), 0 10px 28px color-mix(in oklab, var(--red) 12%, transparent);
+}
+.founder-avatar img { width: 100%; height: 100%; object-fit: cover; object-position: center 22%; }
+.founder-card-body { min-width: 0; flex: 1; padding-top: .15rem; }
+.founder-card-head {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: .75rem 1.25rem; margin-bottom: .65rem;
+}
+.founder-name { font-weight: 900; font-size: clamp(1.15rem, 2.4vw, 1.4rem); color: var(--black); letter-spacing: -.03em; margin-bottom: .35rem; }
+.founder-role { font-size: 14px; font-weight: 700; color: var(--red); font-family: var(--font-mono); letter-spacing: .02em; margin-bottom: .5rem; }
+.founder-li {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 600; color: var(--t2); text-decoration: none;
+}
+.founder-li:hover { color: #0a66c2; }
+.founder-li svg { flex-shrink: 0; width: 15px; height: 15px; }
+.founder-note { font-size: 14px; color: var(--t2); line-height: 1.65; }
+.founder-nd-wrap {
+  flex-shrink: 0; padding: 4px 6px; border-radius: 10px;
+  background: linear-gradient(180deg, #fff, color-mix(in oklab, var(--bg-alt) 40%, #fff));
+  border: 1px solid var(--border); cursor: default; position: relative;
+}
+.founder-nd-wrap img { display: block; width: 44px; height: auto; }
+.founders-footnote {
+  text-align: center; max-width: 42rem; margin: 2.75rem auto 0;
+  font-size: 15px; color: var(--t2); line-height: 1.65;
+}
+@media (max-width: 768px) {
+  #longitudinal-engine .engine-spine {
+    left: 13px; right: auto; top: 6px; bottom: 6px;
+    width: 3px; height: auto; transform: none;
+    background: linear-gradient(180deg, transparent 0%, rgba(247,78,69,.2) 6%, #f74e45 50%, rgba(247,78,69,.15) 94%, transparent 100%);
+  }
+  #longitudinal-engine .engine-nodes { flex-direction: column; align-items: stretch; }
+  #longitudinal-engine .engine-node {
+    min-width: 0; width: 100%;
+    display: grid; grid-template-columns: 28px minmax(0, 1fr); grid-template-rows: auto;
+    padding: .2rem 0 1rem;
+  }
+  #longitudinal-engine .engine-node-dot {
+    grid-column: 1; grid-row: 1; align-self: start; margin-top: 5px; justify-self: center;
+  }
+  #longitudinal-engine .engine-node-top {
+    grid-column: 2; grid-row: 1; text-align: left; align-items: flex-start; padding-bottom: 0;
+  }
+  .founder-card { flex-direction: column; align-items: center; text-align: center; }
+  .founder-card-head { flex-direction: column; align-items: center; }
+}
+
+.alerts-panel {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 1.15rem 1.15rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 100%;
+}
+.alerts-panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 4px;
+}
+.alerts-panel-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--t1);
+  letter-spacing: -.02em;
+  line-height: 1.2;
+}
+.alerts-panel-link {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--red);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: opacity .18s;
+}
+.alerts-panel-link:hover { opacity: .75; }
+.alerts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.alert-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 14px 12px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.04);
+  transition: box-shadow .2s, border-color .2s;
+}
+.alert-card:hover {
+  box-shadow: var(--shadow-sm);
+}
+.alert-card--critica { border-color: rgba(232,53,26,.35); }
+.alert-card--alta { border-color: rgba(245,158,11,.4); }
+.alert-card--media { border-color: rgba(59,130,246,.28); }
+.alert-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.alert-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.alert-card--critica .alert-dot { background: #ef4444; }
+.alert-card--alta .alert-dot { background: #f97316; }
+.alert-card--media .alert-dot { background: #3b82f6; }
+.alert-tag {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  line-height: 1.2;
+}
+.alert-tag--sev-critica {
+  color: #b91c1c;
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+.alert-tag--sev-alta {
+  color: #c2410c;
+  background: #fff7ed;
+  border-color: #fed7aa;
+}
+.alert-tag--cat {
+  color: var(--t2);
+  background: var(--bg-alt);
+  border-color: var(--border);
+}
+.alert-tag--status-novo {
+  color: var(--red);
+  background: var(--red-soft);
+  border-color: rgba(232,53,26,.2);
+}
+.alert-tag--status-analise {
+  color: #1d4ed8;
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+.alert-time {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--t3);
+  white-space: nowrap;
+}
+.alert-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--t1);
+  line-height: 1.35;
+  margin-bottom: 6px;
+}
+.alert-card-entity {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--red);
+  line-height: 1.3;
+  margin-bottom: 2px;
+}
+.alert-card-patient {
+  font-size: 11px;
+  font-weight: 600;
+  color: #e8351a;
+  opacity: .9;
+  margin-bottom: 8px;
+}
+.alert-card-value {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--t2);
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+#integracao { background: #fff; }
+.integ-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2.5rem; }
+.integ-item {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--ui-radius); padding: 1.15rem 1.35rem;
+  box-shadow: var(--shadow-sm); font-size: 15px; font-weight: 600;
+  transition: box-shadow .22s, transform .22s, border-color .22s;
+}
+.integ-item:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+  border-color: var(--border-md);
+}
+.integ-icon { background: var(--bg-alt); border-radius: 10px; }
+
+.cert-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem; }
+.cert-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--ui-radius); box-shadow: var(--shadow-sm);
+  padding: 1.25rem 1.5rem;
+  transition: box-shadow .22s, transform .22s;
+}
+.cert-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.cert-name { color: var(--red); font-family: var(--font-logo); }
+
+#impacto { background: var(--bg-alt); }
+.impact-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2.5rem; }
+.impact-card {
+  position: relative; overflow: hidden;
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--ui-radius); padding: 2rem 1.5rem;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow .22s, transform .22s, border-color .22s;
+}
+.impact-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+  border-color: var(--border-md);
+}
+.impact-card.hi {
+  border-color: color-mix(in oklab, var(--red) 22%, var(--border));
+  background: linear-gradient(145deg, #fff 0%, var(--red-soft) 100%);
+  box-shadow: var(--shadow-md);
+}
+.impact-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 3px; background: var(--grad-line-h);
+}
+.impact-label { color: var(--black); font-weight: 800; font-size: 16px; }
+.impact-num { color: var(--black); }
+.impact-desc { color: var(--text-2); font-size: 16px; }
+
+#roadmap { background: #fff; }
+.roadmap { margin-top: 2.5rem; }
+.rphase {
+  display: grid;
+  grid-template-columns: 120px 32px 1fr;
+  gap: 1.5rem;
+  align-items: flex-start;
+  border-bottom: 1px solid var(--border);
+  padding: 2rem 0;
+}
+.rphase:last-child { border-bottom: none; }
+.rphase-meta { text-align: right; }
+.rphase-num { color: var(--red); font-family: var(--font-mono); font-weight: 700; font-size: 13px; }
+.rphase-when { font-size: 12px; color: var(--t3); margin-top: 4px; }
+.rphase-dot-col {
+  display: flex; flex-direction: column; align-items: center;
+  min-height: 100%;
+}
+.rdot {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--white);
+  border: 3px solid var(--cyan);
+  flex-shrink: 0;
+  box-shadow: 0 0 0 6px rgba(232,53,26,.1);
+  z-index: 2;
+}
+.rline {
+  width: 3px; flex: 1; min-height: 48px; margin-top: 8px;
+  background: linear-gradient(to bottom, var(--cyan), rgba(232,53,26,.15));
+  border-radius: 3px;
+}
+.rphase:last-child .rline { display: none; }
+.rphase-title { color: var(--black); font-weight: 800; font-size: 18px; margin-bottom: 8px; }
+.rphase-desc { color: var(--text-2); font-size: 15px; line-height: 1.65; }
+.rphase-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+
+#fechamento { text-align: center; }
+
+.closing-inner h2 { max-width: 720px; margin: 0 auto; }
+.closing-ctas { margin-top: 2.5rem; }
+.closing-ctas .btn-p { padding: 16px 32px; font-size: 16px; }
+.closing-ctas .btn-s { border-color: var(--border-md); }
+
+.footer-meta { border-top: 1px solid var(--border); margin-top: 4rem; padding-top: 3rem; }
+.meta-title { color: var(--black); font-weight: 800; }
+.meta-sub { color: var(--text-3); }
+
+footer {
+  background: var(--black);
+  border-top: 1px solid #ffffff0f;
+  padding: 1.5rem 2.5rem;
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+}
+.footer-left .nav-c {
+  width: 30px; height: 30px;
+  background: var(--cyan); border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 800; color: var(--bg-0);
+  flex-shrink: 0;
+}
+.footer-txt {
+  font-family: var(--font-logo);
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-weight: 900; color: var(--brand);
+}
+.footer-right { font-size: 16px; color: #ffffff59; font-weight: 600; }
+.footer-right a { color: #f74e45; text-decoration: none; font-weight: 600; }
+.footer-right a:hover { color: #ff8a82; }
+
+@media (max-width: 960px) {
+  nav { padding: 0 1.25rem; }
+  .nav-links { display: none; }
+  .wrap, .hero-inner { padding: 0 1.25rem; }
+  .hero-metrics { grid-template-columns: 1fr; max-width: 100%; }
+  .hero-title { max-width: none; }
+  .plataforma-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+  .prob-tl-wrap { max-width: 100%; }
+  .agents-grid { grid-template-columns: 1fr 1fr; }
+  .dash-board { grid-template-columns: 1fr; }
+  .impact-grid { grid-template-columns: 1fr; }
+  .integ-grid { grid-template-columns: 1fr 1fr; }
+  .kpi-row { grid-template-columns: 1fr 1fr; }
+  footer { flex-direction: column; align-items: flex-start; }
+}
+
+@media (max-width: 540px) {
+  .agents-grid { grid-template-columns: 1fr; }
+  .impact-grid { grid-template-columns: 1fr; }
+  .integ-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body> <!-- ── NAV ──────────────────────────────────── -->
+<nav> <div style="display:flex;align-items:center;gap:10px;"> <a href="#" class="nav-brand"> <div class="nav-c">C</div> <span class="nav-wordmark">CADU</span> </a> <span class="nav-for">Parceiro Estratégico</span> </div> <ul class="nav-links"> <li><a href="#problema">Problema</a></li> <li><a href="#plataforma">Plataforma</a></li> <li><a href="#agentes">Agentes</a></li> <li><a href="#jornada">Jornada</a></li> <li><a href="#longitudinal-engine">Engine</a></li> <li><a href="#dashboards">Dashboards</a></li> <li><a href="#impacto">Impacto</a></li> <li><a href="#roadmap">Roadmap</a></li> <li><a href="#time-fundadores">Time</a></li> </ul> <a href="mailto:ola@cadu.health?subject=Demo CADU, Operadora de Saúde" class="nav-cta">Agendar Demo</a>
+</nav> <!-- ── HERO ─────────────────────────────────── -->
+<section id="hero"> <div class="grid-bg"></div> <div class="hero-inner"> <div class="hero-logo">CADU</div> <div class="hero-eyebrow"> <span class="live-dot"></span> Demo Institucional, Ecossistema Assistencial, Confidencial </div> <h1 class="hero-title"> Inteligência Longitudinal para <em>Neurodesenvolvimento</em> </h1> <p class="hero-sub"> Infraestrutura assistencial AI native para operadoras de saúde, cooperativas médicas, redes hospitalares e ecossistemas públicos e privados, integrando cuidado, família, escola e equipe multidisciplinar em uma camada única de inteligência clínica contínua. </p> <div class="hero-ctas"> <a href="#plataforma" class="btn btn-p">Ver Plataforma →</a> <a href="#agentes" class="btn btn-s">Arquitetura Multiagente</a> <a href="#jornada" class="btn btn-s">Jornada Longitudinal</a> </div> <div class="hero-metrics"> <article class="hero-metric hero-metric--green"> <span class="hero-metric__label">Aderência terapêutica</span> <span class="hero-metric__val"><span class="count" data-t="94">0</span><span class="c">%</span></span> <span class="hero-metric__desc">sessões com presença confirmada</span> <div class="hero-metric__bar"><span style="width:94%"></span></div> </article> <article class="hero-metric hero-metric--amber"> <span class="hero-metric__label">Agentes de IA</span> <span class="hero-metric__val"><span class="count" data-t="8">0</span></span> <span class="hero-metric__desc">operando em paralelo na plataforma</span> <div class="hero-metric__bar"><span style="width:72%"></span></div> </article> <article class="hero-metric hero-metric--green"> <span class="hero-metric__label">Evolução longitudinal</span> <span class="hero-metric__val">↑ <span class="count" data-t="18">0</span><span class="c">%</span></span> <span class="hero-metric__desc">progresso clínico documentado no trimestre</span> <div class="hero-metric__bar"><span style="width:62%"></span></div> </article> </div> <p class="hero-trust">LGPD · compliance nativo + rastreabilidade total por sessão</p> </div> </section> <!-- ── MARQUEE ───────────────────────────────── -->
+<div style="background:var(--bg-1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);"> <div class="marquee-wrap"> <div class="marquee-track"> <span class="marquee-item">Inteligência Longitudinal</span> <span class="marquee-item">Coordenação Assistencial</span> <span class="marquee-item">Redução de Sinistralidade</span> <span class="marquee-item">IA Preditiva</span> <span class="marquee-item">Antifraude Ativo</span> <span class="marquee-item">Open Health</span> <span class="marquee-item">Arquitetura Multiagente</span> <span class="marquee-item">Compliance ANS</span> <span class="marquee-item">Evolução Clínica</span> <span class="marquee-item">Gestão de Rede</span> <span class="marquee-item">Rastreabilidade Total</span> <span class="marquee-item">Jornada Longitudinal</span> <span class="marquee-item">Inteligência Longitudinal</span> <span class="marquee-item">Coordenação Assistencial</span> <span class="marquee-item">Redução de Sinistralidade</span> <span class="marquee-item">IA Preditiva</span> <span class="marquee-item">Antifraude Ativo</span> <span class="marquee-item">Open Health</span> <span class="marquee-item">Arquitetura Multiagente</span> <span class="marquee-item">Compliance ANS</span> <span class="marquee-item">Evolução Clínica</span> <span class="marquee-item">Gestão de Rede</span> <span class="marquee-item">Rastreabilidade Total</span> <span class="marquee-item">Jornada Longitudinal</span> </div> </div>
+</div> <!-- ── SEÇÃO 2: PROBLEMA ─────────────────────── -->
+<section id="problema"> <div class="wrap"> <div class="problema-intro fade"> <div class="section-label">O Problema Sistêmico</div> <h2>Do lado da operadora,<br>tudo que existe é<br><em>o que foi faturado.</em></h2> <p> O cuidado neurodivergente é fragmentado entre clínicas, laudos, terapeutas, escolas e sistemas isolados, uma sequência de rupturas que a operadora só enxerga quando vira custo, sinistro ou litígio. </p> </div>
+      <div class="prob-tl-wrap fade">
+      <div class="prob-journey" role="img" aria-label="Mapa da jornada dos problemas sistêmicos no cuidado neurodivergente">
+        <svg class="prob-journey__svg" viewBox="0 0 1200 900" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+          <path class="prob-path-halo" d="M120 430 C220 430 250 430 250 520 C250 620 350 620 380 620 L380 310 C380 250 500 250 500 330 L500 480 C500 560 620 560 660 500 C700 440 680 300 760 300 C840 300 820 430 820 520 C820 650 940 640 940 540 C940 470 1010 470 1060 470 L1060 360"/>
+          <path class="prob-path-seg" d="M120 430 C220 430 250 430 250 520" stroke="#93c5fd"/>
+          <path class="prob-path-seg" d="M250 520 C250 620 350 620 380 620" stroke="#3b82f6"/>
+          <path class="prob-path-seg" d="M380 620 L380 310" stroke="#06b6d4"/>
+          <path class="prob-path-seg" d="M380 310 C380 250 500 250 500 330" stroke="#22c55e"/>
+          <path class="prob-path-seg" d="M500 330 L500 480" stroke="#eab308"/>
+          <path class="prob-path-seg" d="M500 480 C500 560 620 560 660 500 C700 440 680 300 760 300" stroke="#f97316"/>
+          <path class="prob-path-seg" d="M760 300 C840 300 820 430 820 520" stroke="#fb7185"/>
+          <path class="prob-path-seg" d="M820 520 C820 650 940 640 940 540 C940 470 1010 470 1060 470 L1060 360" stroke="#a855f7"/>
+        </svg>
+        <div class="prob-journey__steps">
+<article class="prob-journey__step prob-journey__step--1 prob-journey__step--above" style="left:10%;top:47.8%;--step-color:#93c5fd"><span class="prob-journey__node" style="background:#93c5fd">1</span><span class="prob-journey__stem" aria-hidden="true"></span><div class="prob-journey__copy"><span class="prob-journey__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h6M4 12h10M4 16h8M14 8l6 4-6 4V8z"/></svg></span><h3 class="prob-journey__title">Fragmentação do cuidado</h3><p class="prob-journey__desc">Clínicas, laudos, WhatsApp, planilhas e escolas sem fio condutor longitudinal.</p></div></article>
+<article class="prob-journey__step prob-journey__step--2 prob-journey__step--below" style="left:20.8%;top:57.8%;--step-color:#3b82f6"><span class="prob-journey__node" style="background:#3b82f6">2</span><span class="prob-journey__stem" aria-hidden="true"></span><div class="prob-journey__copy"><span class="prob-journey__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/><path d="M9 9h6"/></svg></span><h3 class="prob-journey__title">Operadora sem visão clínica</h3><p class="prob-journey__desc">A instituição parceira enxerga faturamento, mas não evolução, aderência ou desfecho assistencial.</p></div></article>
+<article class="prob-journey__step prob-journey__step--3 prob-journey__step--below" style="left:31.7%;top:68.9%;--step-color:#06b6d4"><span class="prob-journey__node" style="background:#06b6d4">3</span><span class="prob-journey__stem" aria-hidden="true"></span><div class="prob-journey__copy"><span class="prob-journey__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.2 6-10a6 6 0 10-12 0c0 4.8 6 10 6 10z"/><circle cx="12" cy="11" r="2.2"/></svg></span><h3 class="prob-journey__title">Sessões sem presença real</h3><p class="prob-journey__desc">Sessões faturadas sem evidência de comparecimento, check-in ou execução documentada.</p></div></article>
+<article class="prob-journey__step prob-journey__step--4 prob-journey__step--above" style="left:31.7%;top:34.4%;--step-color:#22c55e"><span class="prob-journey__node" style="background:#22c55e">4</span><span class="prob-journey__stem" aria-hidden="true"></span><div class="prob-journey__copy"><span class="prob-journey__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5M4 19h16M8 15l3-4 3 3 4-6"/></svg></span><h3 class="prob-journey__title">Frequência desalinhada</h3><p class="prob-journey__desc">Volume de sessões incompatível com evolução clínica registrada na rede credenciada.</p></div></article>
+<article class="prob-journey__step prob-journey__step--5 prob-journey__step--below" style="left:41.7%;top:53.3%;--step-color:#eab308"><span class="prob-journey__node" style="background:#eab308">5</span><span class="prob-journey__stem" aria-hidden="true"></span><div class="prob-journey__copy"><span class="prob-journey__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg></span><h3 class="prob-journey__title">Tratamentos sem progresso</h3><p class="prob-journey__desc">Planos longos sem metas mensuráveis, marcos clínicos ou desfecho assistencial claro.</p></div></article>
+<article class="prob-journey__step prob-journey__step--6 prob-journey__step--above" style="left:63.3%;top:33.3%;--step-color:#f97316"><span class="prob-journey__node" style="background:#f97316">6</span><span class="prob-journey__stem" aria-hidden="true"></span><div class="prob-journey__copy"><span class="prob-journey__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/></svg></span><h3 class="prob-journey__title">Auditoria reativa</h3><p class="prob-journey__desc">Controles manuais tardios, sempre depois do sinistro consolidado na carteira.</p></div></article>
+<article class="prob-journey__step prob-journey__step--7 prob-journey__step--below" style="left:68.3%;top:56.5%;--step-color:#fb7185"><span class="prob-journey__node" style="background:#fb7185">7</span><span class="prob-journey__stem" aria-hidden="true"></span><div class="prob-journey__copy"><span class="prob-journey__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 20v-6M12 20V8M18 20v-9"/><path d="M3 20h18"/></svg></span><h3 class="prob-journey__title">Família desconectada</h3><p class="prob-journey__desc">Baixa adesão familiar, pouca orientação entre sessões e comunicação fragmentada.</p></div></article>
+<article class="prob-journey__step prob-journey__step--8 prob-journey__step--below" style="left:78.3%;top:61.5%;--step-color:#f472b6"><span class="prob-journey__node" style="background:#f472b6">8</span><span class="prob-journey__stem" aria-hidden="true"></span><div class="prob-journey__copy"><span class="prob-journey__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16M6 16V8l6-4 6 4v8"/><path d="M9 12h6"/></svg></span><h3 class="prob-journey__title">Escola fora do fluxo</h3><p class="prob-journey__desc">Informações pedagógicas e comportamentais não entram na inteligência assistencial.</p></div></article>
+<article class="prob-journey__step prob-journey__step--9 prob-journey__step--above" style="left:88.3%;top:40%;--step-color:#a855f7"><span class="prob-journey__node" style="background:#a855f7">9</span><span class="prob-journey__stem" aria-hidden="true"></span><div class="prob-journey__copy"><span class="prob-journey__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 00-6 6v1H5v7h14v-7h-1V9a6 6 0 00-6-6z"/><path d="M9 18v2M15 18v2M8 12h8"/></svg></span><h3 class="prob-journey__title">Sem inteligência longitudinal</h3><p class="prob-journey__desc">A operadora não consegue prever risco, coordenar cuidado ou tomar decisão baseada em trajetória.</p></div></article>
+</div>
+      </div>
+      <p class="prob-tl-footnote">Sem continuidade, sem rastreabilidade, sem inteligência</p>
+    </div>
+    </div>
+</section> <!-- ── SEÇÃO 3: PLATAFORMA ───────────────────── -->
+<section id="plataforma" style="padding:120px 0;"> <div class="wrap"> <div class="plataforma-inner"> <div class="fade"> <div class="section-label">O que é o CADU</div> <h2>Sistema Operacional<br><em>Longitudinal</em> de<br>Neurodesenvolvimento</h2> <p style="margin-top:20px;max-width:440px;"> O CADU é uma infraestrutura de inteligência assistencial voltada ao neurodesenvolvimento infantil. Conecta evolução clínica, metas terapêuticas, aderência, auditoria e sinais de risco em dados contínuos, transformando trajetória em inteligência operacional. </p> <div class="pillars"> <div class="pillar"> <div class="pillar-num">01</div> <div> <div class="pillar-title">Evolução Clínica Longitudinal</div> <div class="pillar-desc">Dashboard por criança com metas e progresso contínuo documentado por sessão</div> </div> </div> <div class="pillar"> <div class="pillar-num">02</div> <div> <div class="pillar-title">IA Assistencial com Alertas Automáticos</div> <div class="pillar-desc">Detecção precoce de inconsistências, estagnação clínica e risco de evasão</div> </div> </div> <div class="pillar"> <div class="pillar-num">03</div> <div> <div class="pillar-title">Antifraude Ativo com Geolocalização</div> <div class="pillar-desc">check in GPS cruzado com faturamento e registro em tempo real</div> </div> </div> <div class="pillar"> <div class="pillar-num">04</div> <div> <div class="pillar-title">Gestão Comparativa de Rede Credenciada</div> <div class="pillar-desc">Performance terapêutica como critério de gestão e renovação contratual</div> </div> </div> <div class="pillar"> <div class="pillar-num">05</div> <div> <div class="pillar-title">Monitoramento de Aderência Terapêutica</div> <div class="pillar-desc">Desvios identificados antes que se tornem custo sem justificativa clínica</div> </div> </div> </div> </div> <!-- Orbit diagram --> <div class="fade" style="display:flex;align-items:center;justify-content:center;"> <div class="orbit-wrap"> <svg class="orbit-path" viewBox="0 0 520 520" aria-hidden="true"> <defs> <linearGradient id="orbitGrad" x1="0%" y1="0%" x2="100%" y2="0%"> <stop offset="0%" stop-color="#eeb5a0"/> <stop offset="25%" stop-color="#e8351a"/> <stop offset="55%" stop-color="#f74e45"/> <stop offset="78%" stop-color="#f5a623"/> <stop offset="100%" stop-color="#1d9e75"/> </linearGradient> </defs> <circle cx="260" cy="260" r="195" fill="none" stroke="url(#orbitGrad)" stroke-width="14" opacity=".14"/> <circle cx="260" cy="260" r="195" fill="none" stroke="url(#orbitGrad)" stroke-width="4" opacity=".92"/> <circle cx="260" cy="260" r="120" fill="none" stroke="url(#orbitGrad)" stroke-width="14" opacity=".14"/> <circle cx="260" cy="260" r="120" fill="none" stroke="url(#orbitGrad)" stroke-width="4" opacity=".92"/> <g stroke="url(#orbitGrad)" stroke-linecap="round" opacity=".28" stroke-width="2.5"> <line x1="260" y1="260" x2="260" y2="140"/> <line x1="260" y1="260" x2="364" y2="200"/> <line x1="260" y1="260" x2="364" y2="320"/> <line x1="260" y1="260" x2="260" y2="380"/> <line x1="260" y1="260" x2="156" y2="320"/> <line x1="260" y1="260" x2="156" y2="200"/> <line x1="260" y1="260" x2="398" y2="122"/> <line x1="260" y1="260" x2="122" y2="398"/> </g> </svg> <div class="orbit-core"> <div class="orbit-core-label">CADU</div> <div class="orbit-core-sub">Sistema<br>Operacional</div> </div> <!-- r=120, 6 nodes, 60° steps: sin/cos values 0°: tx=0, ty=-120 60°: tx=104, ty=-60 120°: tx=104, ty=60 180°: tx=0, ty=120 240°: tx=-104, ty=60 300°: tx=-104, ty=-60 --> <div class="onode" style="transform:translate(calc(-50% + 0px), calc(-50% + -120px));"> <span class="onode-icon">👪</span> <span class="onode-label">Família</span> </div> <div class="onode" style="transform:translate(calc(-50% + 104px), calc(-50% + -60px));"> <span class="onode-icon">🏫</span> <span class="onode-label">Escola</span> </div> <div class="onode" style="transform:translate(calc(-50% + 104px), calc(-50% + 60px));"> <span class="onode-icon">👨‍⚕️</span> <span class="onode-label">Médicos</span> </div> <div class="onode" style="transform:translate(calc(-50% + 0px), calc(-50% + 120px));"> <span class="onode-icon">🏥</span> <span class="onode-label">Clínica</span> </div> <div class="onode" style="transform:translate(calc(-50% + -104px), calc(-50% + 60px));"> <span class="onode-icon">📊</span> <span class="onode-label">Analytics</span> </div> <div class="onode" style="transform:translate(calc(-50% + -104px), calc(-50% + -60px));"> <span class="onode-icon">🛡️</span> <span class="onode-label">Operadora</span> </div> <!-- outer ring: r=195, 2 nodes --> <div class="onode" style="transform:translate(calc(-50% + 138px), calc(-50% + -138px));"> <span class="onode-icon">🤖</span> <span class="onode-label">IA Pred.</span> </div> <div class="onode" style="transform:translate(calc(-50% + -138px), calc(-50% + 138px));"> <span class="onode-icon">📋</span> <span class="onode-label">Regulação</span> </div> </div> </div> </div> </div>
+</section> <!-- ── SEÇÃO 4: AGENTES ──────────────────────── -->
+<section id="agentes"> <div class="wrap"> <div class="fade"> <div class="section-label">Arquitetura Multiagente</div> <h2 style="max-width:620px;">Oito agentes de IA operando<br>em <em>paralelo</em>, em tempo real.</h2> <p style="max-width:540px;margin-top:16px;"> Cada agente possui domínio especializado, inputs estruturados, outputs rastreáveis e automações que entregam inteligência assistencial contínua à operadora, reduzindo carga manual e aumentando previsibilidade clínica. </p> </div> <div class="agents-grid"> <div class="agent-card fade" style="--ac:var(--cyan);--ai:rgba(0,212,255,.1);"> <div class="agent-icon">📊</div> <div class="agent-name">Agente Clínico</div> <div class="agent-role">Acompanhamento Terapêutico Longitudinal</div> <div class="agent-tags"> <span class="agent-tag">Evolução</span> <span class="agent-tag">Protocolos</span> <span class="agent-tag">Alertas</span> <span class="agent-tag">Metas</span> </div> <div class="agent-desc">Registra e analisa o progresso sessão a sessão, detectando estagnação e desvios de protocolo com precisão longitudinal.</div> </div> <div class="agent-card fade" style="--ac:var(--green);--ai:rgba(0,229,160,.1);"> <div class="agent-icon" style="background:rgba(0,229,160,.1);">👪</div> <div class="agent-name">Agente Familiar</div> <div class="agent-role">Engajamento e Suporte Parental</div> <div class="agent-tags"> <span class="agent-tag">Adesão</span> <span class="agent-tag">Comunicação</span> <span class="agent-tag">Rotina</span> <span class="agent-tag">Suporte</span> </div> <div class="agent-desc">Monitora engajamento familiar, orienta rotina e sinaliza baixa adesão antes que impacte a evolução clínica.</div> </div> <div class="agent-card fade" style="--ac:var(--purple);--ai:rgba(167,139,250,.1);"> <div class="agent-icon" style="background:rgba(167,139,250,.1);">🏫</div> <div class="agent-name">Agente Escolar</div> <div class="agent-role">Integração Escola e Clínica</div> <div class="agent-tags"> <span class="agent-tag">Pedagogia</span> <span class="agent-tag">Comportamento</span> <span class="agent-tag">Inclusão</span> </div> <div class="agent-desc">Conecta desenvolvimentos pedagógicos ao plano terapêutico, identificando correlações entre ambiente escolar e progresso.</div> </div> <div class="agent-card fade" style="--ac:var(--amber);--ai:rgba(245,158,11,.1);"> <div class="agent-icon" style="background:rgba(245,158,11,.1);">⚙️</div> <div class="agent-name">Agente Operacional</div> <div class="agent-role">Agenda, Frequência e Produtividade</div> <div class="agent-tags"> <span class="agent-tag">Agenda</span> <span class="agent-tag">Frequência</span> <span class="agent-tag">Ocupação</span> </div> <div class="agent-desc">Otimiza agenda clínica, monitora ocupação e antecipa padrões de falta que impactam custo e capacidade operacional.</div> </div> <div class="agent-card fade" style="--ac:var(--red);--ai:rgba(240,68,68,.1);"> <div class="agent-icon" style="background:rgba(240,68,68,.1);">🛡️</div> <div class="agent-name">Agente Regulatório</div> <div class="agent-role">Compliance, ANS e Auditoria</div> <div class="agent-tags"> <span class="agent-tag">Compliance</span> <span class="agent-tag">ANS</span> <span class="agent-tag">Auditoria</span> <span class="agent-tag">Prontuário</span> </div> <div class="agent-desc">Rastreabilidade total por sessão, relatórios de auditoria automatizados e prontuário inteligente em conformidade regulatória.</div> </div> <div class="agent-card fade" style="--ac:#06b6d4;--ai:rgba(6,182,212,.1);"> <div class="agent-icon" style="background:rgba(6,182,212,.1);">📈</div> <div class="agent-name">Agente Analytics</div> <div class="agent-role">Métricas, Predição e Performance</div> <div class="agent-tags"> <span class="agent-tag">Dashboards</span> <span class="agent-tag">KPIs</span> <span class="agent-tag">Custos</span> <span class="agent-tag">Risco</span> </div> <div class="agent-desc">Agrega dados de todos os agentes em dashboards executivos com predição de risco assistencial e custo por paciente.</div> </div> <div class="agent-card fade" style="--ac:var(--green);--ai:rgba(16,185,129,.1);"> <div class="agent-icon" style="background:rgba(16,185,129,.1);">🏢</div> <div class="agent-name">Agente Operadora</div> <div class="agent-role">Visão Populacional e Coordenação</div> <div class="agent-tags"> <span class="agent-tag">Carteira</span> <span class="agent-tag">Sinistralidade</span> <span class="agent-tag">ROI</span> </div> <div class="agent-desc">Visão longitudinal da carteira neurodivergente com inteligência para gestão de rede, coordenação assistencial e redução de desperdício.</div> </div> <div class="agent-card fade" style="--ac:var(--purple);--ai:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.2);"> <div class="agent-icon" style="background:rgba(139,92,246,.1);">🤖</div> <div class="agent-name">Agente IA Preditiva</div> <div class="agent-role">Identificação Precoce de Risco</div> <div class="agent-tags"> <span class="agent-tag">Predição</span> <span class="agent-tag">Evasão</span> <span class="agent-tag">Alertas Auto.</span> <span class="agent-tag">Recomendação</span> </div> <div class="agent-desc">Modelo preditivo que detecta risco de evasão, piora clínica e inconsistências antes que gerem custo ou impacto assistencial.</div> </div> </div> </div>
+</section> <!-- ── SEÇÃO 5: JORNADA ──────────────────────── -->
+<section id="jornada" style="padding:120px 0;background:var(--bg-1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);overflow:visible;"> <div class="wrap"> <div class="fade"> <div class="section-label">Jornada Longitudinal</div> <h2>A trajetória completa de cada<br>criança, <em>visível pela<br>primeira vez.</em></h2> <p style="max-width:520px;margin-top:16px;"> Uma timeline contínua conectando diagnóstico, avaliações, trocas de terapeutas, evolução e intervenções, com IA detectando padrões ao longo de toda a trajetória. </p> </div> <div class="tl-wrap fade"> <div class="tl-scroll"> <div class="tl-track"> <svg class="tl-path-svg" viewBox="0 0 1280 88" preserveAspectRatio="none" aria-hidden="true"> <defs> <linearGradient id="tlGrad" x1="0%" y1="0%" x2="100%" y2="0%"> <stop offset="0%" stop-color="#eeb5a0"/> <stop offset="25%" stop-color="#e8351a"/> <stop offset="55%" stop-color="#f74e45"/> <stop offset="78%" stop-color="#f5a623"/> <stop offset="100%" stop-color="#1d9e75"/> </linearGradient> </defs> <path d="M0,44 C64,12 128,76 192,44 S320,12 384,44 S512,76 576,44 S704,12 768,44 S896,76 960,44 S1088,12 1152,44 S1216,76 1280,44" fill="none" stroke="url(#tlGrad)" stroke-width="6" stroke-linecap="round" opacity=".92"/> <path d="M0,44 C64,12 128,76 192,44 S320,12 384,44 S512,76 576,44 S704,12 768,44 S896,76 960,44 S1088,12 1152,44 S1216,76 1280,44" fill="none" stroke="url(#tlGrad)" stroke-width="14" stroke-linecap="round" opacity=".14"/> </svg> <div class="tl-steps"> <div class="tl-step tl-step--top"> <div class="tl-card"> <div class="tl-card-num">01</div> <div class="tl-card-title">Triagem</div> <div class="tl-card-desc">Identificação inicial e encaminhamento estruturado</div> </div> <div class="tl-connector"></div> <div class="tl-node">01</div> <div class="tl-spacer"></div> </div> <div class="tl-step tl-step--bottom"> <div class="tl-spacer"></div> <div class="tl-node">02</div> <div class="tl-connector"></div> <div class="tl-card"> <div class="tl-card-num">02</div> <div class="tl-card-title">Onboarding</div> <div class="tl-card-desc">Cadastro família, clínica e escola conectados</div> </div> </div> <div class="tl-step tl-step--top"> <div class="tl-card"> <div class="tl-card-num">03</div> <div class="tl-card-title">Avaliação</div> <div class="tl-card-desc">Diagnóstico estruturado + baseline clínico registrado</div> </div> <div class="tl-connector"></div> <div class="tl-node">03</div> <div class="tl-spacer"></div> </div> <div class="tl-step tl-step--bottom"> <div class="tl-spacer"></div> <div class="tl-node">04</div> <div class="tl-connector"></div> <div class="tl-card"> <div class="tl-card-num">04</div> <div class="tl-card-title">Plano Terapêutico</div> <div class="tl-card-desc">Metas e protocolos individualizados definidos</div> </div> </div> <div class="tl-step tl-step--top"> <div class="tl-card"> <div class="tl-card-num">05</div> <div class="tl-card-title">Integração Familiar</div> <div class="tl-card-desc">Família engajada no cuidado ativo e contínuo</div> </div> <div class="tl-connector"></div> <div class="tl-node">05</div> <div class="tl-spacer"></div> </div> <div class="tl-step tl-step--bottom"> <div class="tl-spacer"></div> <div class="tl-node">06</div> <div class="tl-connector"></div> <div class="tl-card"> <div class="tl-card-num">06</div> <div class="tl-card-title">Integração Escolar</div> <div class="tl-card-desc">Escola conectada ao plano clínico em tempo real</div> </div> </div> <div class="tl-step tl-step--top"> <div class="tl-card"> <div class="tl-card-num">07</div> <div class="tl-card-title">Monitoramento</div> <div class="tl-card-desc">Sessões com presença confirmada + evolução documentada</div> </div> <div class="tl-connector"></div> <div class="tl-node">07</div> <div class="tl-spacer"></div> </div> <div class="tl-step tl-step--bottom"> <div class="tl-spacer"></div> <div class="tl-node alert">⚡</div> <div class="tl-connector"></div> <div class="tl-card"> <div class="tl-card-num alert">08</div> <div class="tl-card-title">Alerta IA</div> <div class="tl-card-desc">Detecção automática de desvio ou risco clínico em 48h</div> </div> </div> <div class="tl-step tl-step--top"> <div class="tl-card"> <div class="tl-card-num">09</div> <div class="tl-card-title">Revisão Clínica</div> <div class="tl-card-desc">Atualização de metas, protocolos e plano terapêutico</div> </div> <div class="tl-connector"></div> <div class="tl-node">09</div> <div class="tl-spacer"></div> </div> <div class="tl-step tl-step--bottom"> <div class="tl-spacer"></div> <div class="tl-node done">10</div> <div class="tl-connector"></div> <div class="tl-card"> <div class="tl-card-num done">10</div> <div class="tl-card-title">Analytics Operadora</div> <div class="tl-card-desc">Relatório longitudinal para inteligência da operadora</div> </div> </div> </div> </div> </div> </div> <div class="ia-callout fade"> <div style="font-size:22px;">⚡</div> <div> <div style="font-size:12px;font-weight:700;color:var(--amber);margin-bottom:6px;letter-spacing:.05em;">IA Assistencial, Detecção Automática</div> <p style="font-size:14px;"> Quando o sistema detecta correlação entre troca de terapeuta e queda em métricas de evolução, um alerta é gerado em menos de 48h, permitindo intervenção coordenada antes de meses de regressão não detectada e custo sem justificativa clínica. </p> </div> </div> </div>
+</section> <!-- ── SEÇÃO: LONGITUDINALITY ENGINE (foto3) ── -->
+<section id="longitudinal-engine"> <div class="wrap"> <div class="fade"> <div class="section-label">Longitudinality Engine</div> <h2>A trajetória completa de cada<br>criança, <em>visível pela<br>primeira vez.</em></h2> <p style="max-width:520px;margin-top:16px;"> Uma timeline contínua conectando diagnóstico, avaliações, trocas de terapeutas, evolução e intervenções, com IA detectando padrões ao longo de toda a trajetória. </p> </div> <div class="engine-timeline fade"> <div class="engine-spine" aria-hidden="true"></div> <div class="engine-nodes"> <div class="engine-node"> <div class="engine-node-top"> <div>Mar 2022</div> <div class="engine-node-label">Diagnóstico TEA</div> </div> <div class="engine-node-dot"></div> </div> <div class="engine-node"> <div class="engine-node-top"> <div class="engine-node-date">Jun 2022</div> <div class="engine-node-label">Início fono + TO</div> </div> <div class="engine-node-dot"></div> </div> <div class="engine-node active"> <div class="engine-node-top"> <div class="engine-node-date">Jan 2023</div> <div class="engine-node-label">Evolução linguagem +32%</div> <span class="engine-badge engine-badge--progress">Progresso</span> </div> <div class="engine-node-dot"></div> </div> <div class="engine-node alert"> <div class="engine-node-top"> <div class="engine-node-date">Jul 2023</div> <div class="engine-node-label">Troca terapeuta, regressão</div> <span class="engine-badge engine-badge--alert">Alerta IA</span> </div> <div class="engine-node-dot"></div> </div> <div class="engine-node"> <div class="engine-node-top"> <div class="engine-node-date">Set 2023</div> <div class="engine-node-label">Intervenção coordenada</div> </div> <div class="engine-node-dot"></div> </div> <div class="engine-node active"> <div class="engine-node-top"> <div class="engine-node-date">Mar 2024</div> <div class="engine-node-label">Inclusão escolar iniciada</div> <span class="engine-badge engine-badge--progress">Marco</span> </div> <div class="engine-node-dot"></div> </div> <div class="engine-node"> <div class="engine-node-top"> <div class="engine-node-date">Hoje</div> <div class="engine-node-label">Acompanhamento ativo</div> </div> <div class="engine-node-dot" style="border-color:#ffffff66"></div> </div> </div> </div> <div class="engine-ai-card fade"> <div class="engine-ai-ico">⚡</div> <div> <div class="engine-ai-lbl">IA assistencial, detecção automática</div> <p class="engine-ai-body"> Em julho/2023, o sistema detectou <strong>correlação entre troca de terapeuta e queda de 18% nas métricas de evolução linguística</strong>. Alerta gerado em 48h. Intervenção coordenada evitou meses de regressão não detectada. </p> </div> </div> </div>
+</section> <!-- ── SEÇÃO 6: DASHBOARDS ───────────────────── -->
+<section id="dashboards" style="padding:120px 0;"> <div class="wrap"> <div class="fade"> <div class="section-label">Dashboards Operadora</div> <h2>O que a operadora<br>enxerga na <em>prática.</em></h2> <p style="max-width:520px;margin-top:16px;"> Inteligência operacional em tempo real: dados clínicos estruturados por criança, sessão e prestador. Não apenas faturamento, evolução real, longitudinal e auditável. </p> </div> <div class="kpi-row fade"> <div class="kpi"> <div class="kpi-val" style="color:var(--cyan);"><span class="count" data-t="94">0</span>%</div> <div class="kpi-lbl">Aderência Terapêutica</div> <div class="kpi-chg up">↑ 12% vs trimestre anterior</div> </div> <div class="kpi"> <div class="kpi-val"><span class="count" data-t="3">0</span>.2%</div> <div class="kpi-lbl">Taxa de Evasão</div> <div class="kpi-chg up">↓ 8.1 pp de redução</div> </div> <div class="kpi"> <div class="kpi-val" style="color:var(--green);"><span class="count" data-t="18">0</span>%</div> <div class="kpi-lbl">Evolução Clínica Média</div> <div class="kpi-chg up">↑ progresso no trimestre</div> </div> <div class="kpi"> <div class="kpi-val"><span class="count" data-t="97">0</span>%</div> <div class="kpi-lbl">Rastreabilidade de Sessões</div> <div class="kpi-chg up">vs 0% antes do CADU</div> </div> <div class="kpi"> <div class="kpi-val" style="color:var(--amber);">3 a 12×</div> <div class="kpi-lbl">ROI Assistencial</div> <div class="kpi-chg up">eficiência + antifraude</div> </div> </div> <div class="dash-board fade"> <div class="dash-primary"> <div class="chart-card-head"> <div> <h3 class="chart-title">Evolução da carteira</h3> <p class="chart-sub">Custo total e volume de sessões nos últimos 12 meses</p> </div> </div> <div class="chart-canvas-wrap chart-canvas-wrap--lg"> <canvas id="chart-evolution"></canvas> </div> <div class="chart-stack"> <div class="chart-subcard chart-subcard--teal"> <div class="chart-subcard-inner"> <div class="chart-subcard-head"> <div> <h3 class="chart-title" style="font-size:14px;">Conformidade média GPS</h3> <p class="chart-sub">check ins válidos sobre sessões faturadas (demo)</p> </div> <span class="chart-pill chart-pill--teal" id="gps-pill">89%</span> </div> <div class="chart-canvas-wrap chart-canvas-wrap--md"> <canvas id="chart-gps"></canvas> </div> </div> </div> <div class="chart-subcard chart-subcard--amber"> <div class="chart-subcard-inner"> <div class="chart-subcard-head"> <div> <h3 class="chart-title" style="font-size:14px;">Alertas abertos por mês</h3> <p class="chart-sub">Novos + em análise (série sintética)</p> </div> <span class="chart-pill chart-pill--amber" id="alerts-pill">28 no mês</span> </div> <div class="chart-canvas-wrap chart-canvas-wrap--md"> <canvas id="chart-alerts"></canvas> </div> </div> </div> </div> </div> <div class="dash-side"> <div class="alerts-panel fade" style="margin-top:0;"> <div class="alerts-panel-head"> <h3 class="alerts-panel-title">Alertas recentes</h3> <a href="#" class="alerts-panel-link">Ver todos →</a> </div> <div class="alerts-list"> <article class="alert-card alert-card--critica"> <div class="alert-card-meta"> <span class="alert-dot" aria-hidden="true"></span> <span class="alert-tag alert-tag--sev-critica">Crítica</span> <span class="alert-tag alert-tag--cat">Fraude</span> <span class="alert-tag alert-tag--status-novo">Novo</span> <time class="alert-time" datetime="2026-05-17T01:00">17 de mai., 01:00</time> </div> <h4 class="alert-card-title">GPS inconsistente em 12 das últimas 20 sessões</h4> <p class="alert-card-entity">Espaço Crescer Terapias</p> <p class="alert-card-patient">Luciana Ferreira</p> <p class="alert-card-value">Valor envolvido: R$ 8.400</p> </article> <article class="alert-card alert-card--critica"> <div class="alert-card-meta"> <span class="alert-dot" aria-hidden="true"></span> <span class="alert-tag alert-tag--sev-critica">Crítica</span> <span class="alert-tag alert-tag--cat">Evolução</span> <span class="alert-tag alert-tag--status-analise">Em análise</span> <time class="alert-time" datetime="2026-05-16T14:30">16 de mai., 14:30</time> </div> <h4 class="alert-card-title">Sem evolução documentada há 90 dias</h4> <p class="alert-card-entity">Clínica Saúde Plena</p> <p class="alert-card-patient">Miguel Alves</p> <p class="alert-card-value">Valor envolvido: R$ 9.600</p> </article> <article class="alert-card alert-card--alta"> <div class="alert-card-meta"> <span class="alert-dot" aria-hidden="true"></span> <span class="alert-tag alert-tag--sev-alta">Alta</span> <span class="alert-tag alert-tag--cat">Faturamento</span> <span class="alert-tag alert-tag--status-novo">Novo</span> <time class="alert-time" datetime="2026-05-15T09:15">15 de mai., 09:15</time> </div> <h4 class="alert-card-title">Volume de sessões 40% acima da média da rede</h4> <p class="alert-card-entity">Instituto Neuro Vida</p> <p class="alert-card-value">Valor envolvido: R$ 3.200</p> </article> <article class="alert-card alert-card--alta"> <div class="alert-card-meta"> <span class="alert-dot" aria-hidden="true"></span> <span class="alert-tag alert-tag--sev-alta">Alta</span> <span class="alert-tag alert-tag--cat">Evolução</span> <span class="alert-tag alert-tag--status-analise">Em análise</span> <time class="alert-time" datetime="2026-05-14T11:00">14 de mai., 11:00</time> </div> <h4 class="alert-card-title">Troca de terapeuta + queda de 22% em métricas de linguagem</h4> <p class="alert-card-entity">Clínica Centro</p> <p class="alert-card-patient">Paciente #1923</p> </article> </div> </div> </div> </div> </div>
+</section> <!-- ── SEÇÃO 7: INTEGRAÇÃO ───────────────────── -->
+<section id="integracao" style="padding:120px 0;background:var(--bg-1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);"> <div class="wrap"> <div class="fade"> <div class="section-label">Integração Ecossistêmica</div> <h2>Interoperabilidade com o<br><em>ecossistema assistencial.</em></h2> <p style="max-width:500px;margin-top:16px;"> Arquitetura modular e escalável para grandes operadoras, cooperativas, health systems, PPPs e instituições parceiras, integração com sistemas legados, prontuários eletrônicos, ERPs e plataformas regulatórias, com LGPD compliance e segurança de dados nativos. </p> </div> <div class="integ-grid fade"> <div class="integ-item"><div class="integ-icon">🏥</div>Operadoras de Saúde</div> <div class="integ-item"><div class="integ-icon">📋</div>Prontuários Eletrônicos</div> <div class="integ-item"><div class="integ-icon">🏛️</div>Sistemas ANS</div> <div class="integ-item"><div class="integ-icon">🔌</div>APIs Clínicas</div> <div class="integ-item"><div class="integ-icon">📊</div>Plataformas BI</div> <div class="integ-item"><div class="integ-icon">🏢</div>ERP Hospitalar</div> <div class="integ-item"><div class="integ-icon">🏫</div>Sistemas Escolares</div> <div class="integ-item"><div class="integ-icon">🔒</div>LGPD Compliance Nativo</div> <div class="integ-item"><div class="integ-icon">☁️</div>Open Health Standards</div> </div> <div class="cert-row fade" style="margin-top:20px;"> <div class="cert-card"> <div class="cert-name">HL7 FHIR</div> <div class="cert-desc">R4, Padrão internacional de interoperabilidade em saúde</div> </div> <div class="cert-card"> <div class="cert-name">ISO 27001</div> <div class="cert-desc">Segurança de informação, Certificação de referência global</div> </div> <div class="cert-card"> <div class="cert-name">SOC 2</div> <div class="cert-desc">Auditoria, Disponibilidade, Confidencialidade de dados</div> </div> </div> </div>
+</section> <!-- ── SEÇÃO 8: IMPACTO ──────────────────────── -->
+<section id="impacto" style="padding:120px 0;"> <div class="wrap"> <div class="fade"> <div class="section-label">Impacto para Operadoras</div> <h2>De custo assistencial<br>para <em>inteligência<br>longitudinal.</em></h2> <p style="max-width:520px;margin-top:16px;"> Neurodesenvolvimento é um dos maiores desafios estruturais da saúde suplementar. Alta demanda, judicialização crescente, custos sem visibilidade clínica. O CADU transforma esse custo opaco em inteligência operacional mensurável. </p> </div> <div class="impact-grid"> <div class="impact-card fade"> <div class="impact-icon">📉</div> <div class="impact-label">Redução de Sinistralidade</div> <div class="impact-num" style="color:var(--cyan);">5 a 10%</div> <div class="impact-desc">Detecção precoce de inconsistências, fraudes e tratamentos sem evidência de progresso clínico documentado.</div> </div> <div class="impact-card hi fade"> <div class="impact-icon">🤖</div> <div class="impact-label">ROI Assistencial Estimado</div> <div class="impact-num" style="color:var(--cyan);">3 a 12×</div> <div class="impact-desc">Retorno potencial sobre investimento via eficiência operacional combinada com antifraude ativo por sessão.</div> </div> <div class="impact-card fade"> <div class="impact-icon">📊</div> <div class="impact-label">Visibilidade Clínica</div> <div class="impact-num" style="color:var(--cyan);">100%</div> <div class="impact-desc">Rastreabilidade por sessão, prestador e paciente, substituindo auditoria manual por inteligência automatizada.</div> </div> <div class="impact-card fade"> <div class="impact-icon">⚖️</div> <div class="impact-label">Redução de Judicialização</div> <div class="impact-num" style="color:var(--green);">↓ Sig.</div> <div class="impact-desc">Prontuário inteligente com evidência clínica estruturada como defesa em processos de auditoria e litígio.</div> </div> <div class="impact-card fade"> <div class="impact-icon">🎯</div> <div class="impact-label">Coordenação Assistencial</div> <div class="impact-num" style="color:var(--t1);font-size:28px;">Sistêmica</div> <div class="impact-desc">Visão longitudinal da carteira neurodivergente com inteligência para gestão de rede credenciada.</div> </div> <div class="impact-card fade"> <div class="impact-icon">📈</div> <div class="impact-label">Previsibilidade Assistencial</div> <div class="impact-num" style="color:var(--t1);font-size:28px;">Ativa</div> <div class="impact-desc">IA preditiva identifica risco antes de se tornar custo emergencial ou sinistro não planejado na carteira.</div> </div> </div> </div>
+</section> <!-- ── SEÇÃO 9: ROADMAP ──────────────────────── -->
+<section id="roadmap" style="padding:120px 0;background:var(--bg-1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);"> <div class="wrap"> <div class="fade"> <div class="section-label">Estrutura de Piloto Operacional</div> <h2>Da conversa ao piloto<br>operacional <em>em 90 dias.</em></h2> <p style="max-width:500px;margin-top:16px;"> Estrutura progressiva de implantação com KPIs definidos, treinamento integrado e expansão baseada em resultado clínico documentado, sem risco operacional para a operadora. </p> </div> <div class="roadmap fade"> <div class="rphase"> <div class="rphase-meta"> <div class="rphase-num">Fase 01</div> <div class="rphase-when">Semanas 1 a 4</div> </div> <div class="rphase-dot-col"> <div class="rdot"></div> <div class="rline"></div> </div> <div> <div class="rphase-title">Kick off e Implantação</div> <div class="rphase-desc">Definição de escopo com equipe da operadora; seleção de clínicas credenciadas para piloto, Setup técnico e integração inicial; configuração dos agentes e dashboards executivos.</div> <div class="rphase-tags"> <span class="badge b-cyan">2 a 3 Clínicas Piloto</span> <span class="badge b-cyan">50 a 100 Pacientes</span> <span class="badge b-cyan">Setup Completo</span> </div> </div> </div> <div class="rphase"> <div class="rphase-meta"> <div class="rphase-num">Fase 02</div> <div class="rphase-when">Semanas 5 a 8</div> </div> <div class="rphase-dot-col"> <div class="rdot"></div> <div class="rline"></div> </div> <div> <div class="rphase-title">Integração Operacional</div> <div class="rphase-desc">Integração com sistemas legados da operadora; ativação dos agentes clínico, familiar e operacional, check in geolocalizado em produção; primeiros alertas de IA ativos e calibrados.</div> <div class="rphase-tags"> <span class="badge b-cyan">Integração API</span> <span class="badge b-cyan">Agentes Ativos</span> <span class="badge b-amber">Antifraude Live</span> </div> </div> </div> <div class="rphase"> <div class="rphase-meta"> <div class="rphase-num">Fase 03</div> <div class="rphase-when">Semanas 9 a 10</div> </div> <div class="rphase-dot-col"> <div class="rdot"></div> <div class="rline"></div> </div> <div> <div class="rphase-title">Treinamento e Onboarding</div> <div class="rphase-desc">Capacitação da equipe assistencial e administrativa; workshop com terapeutas e coordenadores, Onboarding digital das famílias participantes; ativação do módulo de integração escolar.</div> <div class="rphase-tags"> <span class="badge b-cyan">Equipe Treinada</span> <span class="badge b-cyan">Famílias Onboard</span> <span class="badge b-green">Escola Conectada</span> </div> </div> </div> <div class="rphase"> <div class="rphase-meta"> <div class="rphase-num">Fase 04</div> <div class="rphase-when">Semanas 11 a 16</div> </div> <div class="rphase-dot-col"> <div class="rdot"></div> <div class="rline"></div> </div> <div> <div class="rphase-title">Acompanhamento e KPIs</div> <div class="rphase-desc">Monitoramento de métricas do piloto em tempo real; reuniões quinzenais de resultado com equipe da instituição parceira; dashboards ao vivo; ajustes de protocolo e calibração dos agentes.</div> <div class="rphase-tags"> <span class="badge b-green">KPIs Ativos</span> <span class="badge b-cyan">Relatórios Semanais</span> <span class="badge b-cyan">Dashboard Live</span> </div> </div> </div> <div class="rphase"> <div class="rphase-meta"> <div class="rphase-num">Fase 05</div> <div class="rphase-when">Mês 4+</div> </div> <div class="rphase-dot-col"> <div class="rdot"></div> </div> <div> <div class="rphase-title">Expansão e Escala</div> <div class="rphase-desc">Avaliação dos resultados do piloto com evidências clínicas e financeiras; proposta de expansão para rede completa; ativação de módulos adicionais, Roadmap de inteligência populacional avançada.</div> <div class="rphase-tags"> <span class="badge b-green">Expansão da Rede</span> <span class="badge b-cyan">Inteligência Populacional</span> <span class="badge b-cyan">Full Deploy</span> </div> </div> </div> </div> </div>
+</section> <!-- ── SEÇÃO: TIME / CREDIBILIDADE (foto2) ───── -->
+<section id="time-fundadores"> <div class="wrap"> <div class="fade"> <div class="section-label">Credibilidade</div> <h2>Quem está<br><em>por trás.</em></h2> </div> <div class="founders-grid"> <article class="founder-card fade"> <div class="founder-card-visual"> <div class="founder-avatar"><img src="assets/manu.jpeg" alt="Manu Costa" width="88" height="88" loading="lazy"/></div> </div> <div class="founder-card-body"> <div class="founder-card-head"> <div> <h3 class="founder-name">Manu Costa</h3> <p class="founder-role">Founder &amp; CEO</p> <a class="founder-li" href="https://www.linkedin.com/in/manulcosta/" target="_blank" rel="noopener noreferrer"> <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg> LinkedIn </a> </div> <div class="founder-nd-wrap" title="Autista"><img src="assets/neurodiversity-symbol.svg" alt="" width="44" height="22"/></div> </div> <p class="founder-note">Product designer com mais de 20 anos de experiência em plataformas, sistemas e produtos digitais, com passagem por Nike, Meta e Esri. Prepara sistemas complexos para alimentar a IA com dados e fluxos confiáveis.</p> </div> </article> <article class="founder-card fade"> <div class="founder-card-visual"> <div class="founder-avatar"><img src="assets/mari.png" alt="Mariana Pappou" width="88" height="88" loading="lazy"/></div> </div> <div class="founder-card-body"> <div class="founder-card-head"> <div> <h3 class="founder-name">Mariana Pappou</h3> <p class="founder-role">Cofundador &amp; CSO</p> <a class="founder-li" href="https://www.linkedin.com/in/marideoliveira/" target="_blank" rel="noopener noreferrer"> <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg> LinkedIn </a> </div> <div class="founder-nd-wrap" title="TDAH"><img src="assets/neurodiversity-symbol.svg" alt="" width="44" height="22"/></div> </div> <p class="founder-note">Formação internacional pela University of the Arts London. Especialista em sistemas de design, estratégia de marca e design de interface. Criadora do método Neuro Affective Design.</p> </div> </article> <article class="founder-card fade"> <div class="founder-card-visual"> <div class="founder-avatar"><img src="assets/adriano.png" alt="Adriano Conrado" width="88" height="88" loading="lazy"/></div> </div> <div class="founder-card-body"> <h3 class="founder-name">Adriano Conrado</h3> <p class="founder-role">CCO, Chief Clinical Officer</p> <a class="founder-li" href="https://www.linkedin.com/in/adriano-conrado-rodrigues-ot-ms-30b90a1b9/" target="_blank" rel="noopener noreferrer"> <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg> LinkedIn </a> <p class="founder-note">Terapeuta ocupacional especialista em neurodesenvolvimento e operações clínicas. Ex-vice-presidente do CREFITO-3. Responsável pela arquitetura operacional e validação técnica das jornadas de cuidado.</p> </div> </article> <article class="founder-card fade"> <div class="founder-card-visual"> <div class="founder-avatar"><img src="assets/william.jpeg" alt="William Oliveira" width="88" height="88" loading="lazy"/></div> </div> <div class="founder-card-body"> <div class="founder-card-head"> <div> <h3 class="founder-name">William Oliveira</h3> <p class="founder-role">CTO, Chief Technology Officer</p> <a class="founder-li" href="https://www.linkedin.com/in/william-oliveira/" target="_blank" rel="noopener noreferrer"> <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg> LinkedIn </a> </div> <div class="founder-nd-wrap" title="Autista"><img src="assets/neurodiversity-symbol.svg" alt="" width="44" height="22"/></div> </div> <p class="founder-note">Engenheiro de Software com trajetória em IKEA, Loggi e QuintoAndar. Especialista em sistemas de larga escala e IA Generativa, lidera a visão tecnológica com foco em arquiteturas modernas e escaláveis.</p> </div> </article> </div> <p class="founders-footnote fade">Nascemos da Clínica Casa do Urso, em São Paulo. 100+ famílias atendidas. Dados clínicos estruturados desde 2023.</p> </div>
+</section> <!-- ── SEÇÃO 10: FECHAMENTO ──────────────────── -->
+<section id="fechamento"> <div class="closing-glow"></div> <div class="wrap"> <div class="closing-inner fade" style="text-align:center;"> <div class="section-label" style="justify-content:center;">Próximo Passo, Parceiro Estratégico</div> <h2 style="margin-bottom:18px;"> Construindo o futuro<br>do <em>cuidado longitudinal.</em> </h2> <p style="font-size:17px;max-width:580px;margin:0 auto;line-height:1.72;"> O CADU conecta inteligência assistencial, tecnologia e coordenação humana em uma única infraestrutura de cuidado, projetada para escalar com a carteira e o ecossistema assistencial da operadora. </p> <div class="closing-ctas"> <a href="mailto:ola@cadu.health?subject=Demo CADU, Operadora de Saúde" class="btn btn-p" style="padding:14px 28px;font-size:14px;"> → Agendar Demo Completa </a> <a href="mailto:ola@cadu.health?subject=Arquitetura Técnica CADU, Operadora" class="btn btn-s" style="padding:14px 28px;font-size:14px;"> Arquitetura Técnica </a> <a href="mailto:ola@cadu.health?subject=Piloto CADU, Operadora de Saúde" class="btn btn-s" style="padding:14px 28px;font-size:14px;"> Piloto Operacional </a> </div> <div class="footer-meta"> <div class="meta-item"> <div class="meta-icon">🏥</div> <div class="meta-title">Clínica Casa do Urso</div> <div class="meta-sub">Origem, São Paulo, 100+ famílias</div> </div> <div class="meta-item"> <div class="meta-icon">📊</div> <div class="meta-title">Dados Clínicos desde 2023</div> <div class="meta-sub">Estruturados, validados e longitudinais</div> </div> <div class="meta-item"> <div class="meta-icon">🇧🇷</div> <div class="meta-title">Brasil first</div> <div class="meta-sub">ANS, LGPD, Saúde Suplementar</div> </div> <div class="meta-item"> <div class="meta-icon">🤖</div> <div class="meta-title">AI Native</div> <div class="meta-sub">8 agentes, IA preditiva, Open Health</div> </div> </div> </div> </div>
+</section> <!-- ── FOOTER ─────────────────────────────────── -->
+<footer> <div class="footer-left"> <div class="nav-c">C</div> <span class="footer-txt">CADU, Infraestrutura em Neurodesenvolvimento</span> </div> <div class="footer-right">Demo Institucional, Ecossistema Assistencial, Confidencial</div> <div class="footer-right"> <a href="mailto:ola@cadu.health">ola@cadu.health</a> </div>
+</footer> <!-- ── SCRIPTS ─────────────────────────────────── -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  /* ── Chart.js setup ──────────────────────── */
+  Chart.defaults.font.family = "'Satoshi', sans-serif";
+  Chart.defaults.color = '#ababab';
+
+  const grid = { color: 'rgba(0,0,0,0.06)' };
+  const accent = '#e8351a', green = '#1d9e75', amber = '#f5a623', red = '#e8351a', blue = '#3a7bd5';
+
+  const serieTemporal = [
+    { mes:'Jun/25', custo:282000, sessoes:1810, conformidade_gps:76, alertas_mes:20 },
+    { mes:'Jul/25', custo:291000, sessoes:1840, conformidade_gps:78, alertas_mes:21 },
+    { mes:'Ago/25', custo:299000, sessoes:1870, conformidade_gps:80, alertas_mes:22 },
+    { mes:'Set/25', custo:308000, sessoes:1900, conformidade_gps:82, alertas_mes:23 },
+    { mes:'Out/25', custo:316000, sessoes:1930, conformidade_gps:84, alertas_mes:24 },
+    { mes:'Nov/25', custo:325000, sessoes:1960, conformidade_gps:85, alertas_mes:25 },
+    { mes:'Dez/25', custo:334000, sessoes:1990, conformidade_gps:86, alertas_mes:25 },
+    { mes:'Jan/26', custo:342000, sessoes:2020, conformidade_gps:87, alertas_mes:26 },
+    { mes:'Fev/26', custo:351000, sessoes:2050, conformidade_gps:88, alertas_mes:27 },
+    { mes:'Mar/26', custo:359000, sessoes:2080, conformidade_gps:88, alertas_mes:27 },
+    { mes:'Abr/26', custo:368000, sessoes:2110, conformidade_gps:89, alertas_mes:28 },
+    { mes:'Mai/26', custo:376000, sessoes:2140, conformidade_gps:89, alertas_mes:28 },
+  ];
+  const last = serieTemporal[serieTemporal.length - 1];
+  const gpsPill = document.getElementById('gps-pill');
+  const alertsPill = document.getElementById('alerts-pill');
+  if (gpsPill) gpsPill.textContent = last.conformidade_gps + '%';
+  if (alertsPill) alertsPill.textContent = last.alertas_mes + ' no mês';
+
+  const evEl = document.getElementById('chart-evolution');
+  if (evEl) {
+    const ctx = evEl.getContext('2d');
+    const gradCusto = ctx.createLinearGradient(0, 0, 0, 280);
+    gradCusto.addColorStop(0, 'rgba(247,78,69,0.32)');
+    gradCusto.addColorStop(1, 'rgba(247,78,69,0.02)');
+    const gradSess = ctx.createLinearGradient(0, 0, 0, 280);
+    gradSess.addColorStop(0, 'rgba(59,130,246,0.22)');
+    gradSess.addColorStop(1, 'rgba(59,130,246,0)');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: serieTemporal.map(p => p.mes),
+        datasets: [
+          {
+            label: 'Custo (R$)',
+            data: serieTemporal.map(p => p.custo),
+            borderColor: '#F74E45',
+            backgroundColor: gradCusto,
+            borderWidth: 2.5,
+            fill: true,
+            tension: 0.35,
+            yAxisID: 'y',
+            pointRadius: 0,
+            pointHoverRadius: 5,
+          },
+          {
+            label: 'Sessões',
+            data: serieTemporal.map(p => p.sessoes),
+            borderColor: '#3B82F6',
+            backgroundColor: gradSess,
+            borderWidth: 2.5,
+            fill: true,
+            tension: 0.35,
+            yAxisID: 'y1',
+            pointRadius: 0,
+            pointHoverRadius: 5,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { position: 'bottom', labels: { boxWidth: 10, boxHeight: 10, font: { size: 12 }, color: '#6B6B6B' } },
+          tooltip: {
+            backgroundColor: '#fff',
+            titleColor: '#161616',
+            bodyColor: '#333',
+            borderColor: '#E5E5E5',
+            borderWidth: 1,
+            padding: 10,
+            callbacks: {
+              label: (c) => c.dataset.label.startsWith('Custo')
+                ? ' Custo: R$ ' + c.parsed.y.toLocaleString('pt-BR')
+                : ' Sessões: ' + c.parsed.y.toLocaleString('pt-BR'),
+            },
+          },
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { color: '#767676', font: { size: 11 } } },
+          y: {
+            position: 'left',
+            grid: { color: '#EDEDED' },
+            ticks: { color: '#767676', font: { size: 11 }, callback: v => 'R$ ' + (v / 1000).toFixed(0) + 'k' },
+          },
+          y1: {
+            position: 'right',
+            grid: { display: false },
+            ticks: { color: '#767676', font: { size: 11 } },
+          },
+        },
+      },
+    });
+  }
+
+  const gpsEl = document.getElementById('chart-gps');
+  if (gpsEl) {
+    const ctxGps = gpsEl.getContext('2d');
+    const hGps = 240;
+    const gradGps = ctxGps.createLinearGradient(0, hGps, 0, 0);
+    gradGps.addColorStop(0, 'rgba(16,185,129,0.05)');
+    gradGps.addColorStop(0.4, 'rgba(45,212,191,0.18)');
+    gradGps.addColorStop(1, 'rgba(6,182,212,0.32)');
+    const gpsVals = serieTemporal.map(p => p.conformidade_gps);
+    const gpsMin = Math.max(65, Math.min(...gpsVals) - 6);
+    const gpsMax = Math.min(100, Math.max(...gpsVals) + 4);
+    new Chart(ctxGps, {
+      type: 'line',
+      data: {
+        labels: serieTemporal.map(p => p.mes),
+        datasets: [{
+          label: 'Conformidade',
+          data: gpsVals,
+          borderColor: '#0d9488',
+          backgroundColor: gradGps,
+          borderWidth: 2.75,
+          fill: true,
+          tension: 0.42,
+          pointRadius: 0,
+          pointHoverRadius: 7,
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false }, ticks: { color: '#6B6B6B', font: { size: 10 }, maxRotation: 0 } },
+          y: {
+            min: gpsMin,
+            max: gpsMax,
+            grid: { color: 'rgba(15,23,42,0.06)' },
+            ticks: { color: '#6B6B6B', font: { size: 10 }, callback: v => v + '%' },
+          },
+        },
+      },
+    });
+  }
+
+  const alEl = document.getElementById('chart-alerts');
+  if (alEl) {
+    const ctxAl = alEl.getContext('2d');
+    const nMeses = serieTemporal.length;
+    new Chart(ctxAl, {
+      type: 'bar',
+      data: {
+        labels: serieTemporal.map(p => p.mes),
+        datasets: [{
+          label: 'Alertas',
+          data: serieTemporal.map(p => p.alertas_mes),
+          borderWidth: 0,
+          borderRadius: { topLeft: 12, topRight: 12, bottomLeft: 4, bottomRight: 4 },
+          maxBarThickness: 22,
+          backgroundColor: (c) => {
+            const { ctx, chartArea } = c.chart;
+            if (!chartArea) return 'rgba(251,191,36,0.65)';
+            const g = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+            const t = nMeses > 1 ? c.dataIndex / (nMeses - 1) : 0;
+            g.addColorStop(0, `rgba(251, 113, 133, ${0.28 + t * 0.12})`);
+            g.addColorStop(0.45, `rgba(251, 191, 36, ${0.5 + t * 0.25})`);
+            g.addColorStop(1, `rgba(253, 224, 71, ${0.82 + t * 0.12})`);
+            return g;
+          },
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false }, ticks: { color: '#6B6B6B', font: { size: 10 }, maxRotation: 0 } },
+          y: {
+            min: 18,
+            grid: { color: 'rgba(15,23,42,0.06)' },
+            ticks: { color: '#6B6B6B', font: { size: 10 }, stepSize: 4 },
+          },
+        },
+      },
+    });
+  }
+
+  /* ── Count-up animation ──────────────────── */
+  function countUp(el) {
+    if (el.dataset.done) return;
+    el.dataset.done = '1';
+    const target = parseFloat(el.dataset.t);
+    const dur = 1400;
+    const t0 = performance.now();
+    (function tick(now) {
+      const p = Math.min((now - t0) / dur, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(ease * target);
+      if (p < 1) requestAnimationFrame(tick);
+    })(performance.now());
+  }
+
+  /* ── Intersection Observer ───────────────── */
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      e.target.classList.add('in');
+      e.target.querySelectorAll('.count').forEach(countUp);
+      io.unobserve(e.target);
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.fade').forEach(el => io.observe(el));
+
+  // Hero counters on load
+  setTimeout(() => {
+    document.querySelectorAll('.hero-inner .count').forEach(countUp);
+  }, 600);
+
+});
+</script>
+</body>
+</html>
