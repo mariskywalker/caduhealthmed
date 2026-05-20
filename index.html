@@ -753,9 +753,26 @@ footer{background:var(--black);border-top:1px solid #ffffff0f;flex-wrap:wrap;jus
 .sol-grid-5 .sol-card:nth-child(5){grid-column:2}
 @media(max-width:980px){.sol-grid-5 .sol-card:nth-child(4),.sol-grid-5 .sol-card:nth-child(5){grid-column:auto}}
 
-/* Ecossistema: protótipo cadu-roles (iframe isolado) */
-#frentes-cuidado .portal-embed{margin-top:0}
-#frentes-cuidado .portal-embed iframe{min-height:min(92vh,980px);background:#f5ecff}
+/* Ecossistema: protótipo cadu-roles em tela cheia */
+#frentes-cuidado.sec{padding:0;scroll-margin-top:64px}
+#frentes-cuidado .roles-embed-full{
+  width:100%;
+  max-width:none;
+  margin:0;
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+  overflow:hidden;
+  background:#f5ecff;
+}
+#frentes-cuidado .roles-embed-full iframe{
+  width:100%;
+  min-height:calc(100vh - 64px);
+  height:calc(100vh - 64px);
+  border:0;
+  display:block;
+  background:#f5ecff;
+}
 .cta-headline strong{color:var(--red);font-weight:900}
 /* VISÃO PLANO DE SAÚDE (iframe, Tailwind + Chart isolados) */
 .portal-embed{margin-top:2.5rem;border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--border-md);box-shadow:var(--shadow-lg);background:#fafaf8;position:relative}
@@ -1146,10 +1163,8 @@ footer{background:var(--black);border-top:1px solid #ffffff0f;flex-wrap:wrap;jus
 </section>
 
 <section id="frentes-cuidado" class="sec sec-white">
-  <div class="wrap">
-    <div class="portal-embed reveal">
-      <iframe id="cadu-roles-frame" src="cadu-roles.html" title="CADU: protótipo por perfil (Supervisor, Terapeuta, Família, Escola)" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-    </div>
+  <div class="roles-embed-full reveal">
+    <iframe id="cadu-roles-frame" src="cadu-roles.html" title="CADU: protótipo por perfil (Supervisor, Terapeuta, Família, Escola)" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
   </div>
 </section>
 
@@ -1564,13 +1579,15 @@ document.querySelectorAll('.reveal').forEach(el => io.observe(el));
     try{
       var doc = frame.contentDocument;
       if(!doc) return;
-      var h = Math.max(doc.documentElement.scrollHeight, doc.body ? doc.body.scrollHeight : 0, 720);
+      var minH = Math.max((window.innerHeight || 720) - 64, 640);
+      var h = Math.max(doc.documentElement.scrollHeight, doc.body ? doc.body.scrollHeight : 0, minH);
       frame.style.height = h + 'px';
     }catch(e){}
   }
   frame.addEventListener('load', function(){
     resizeRolesFrame();
     try{ frame.contentWindow.addEventListener('hashchange', resizeRolesFrame); }catch(e){}
+    window.addEventListener('resize', resizeRolesFrame);
     var t = 0;
     var poll = setInterval(function(){
       resizeRolesFrame();
