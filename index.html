@@ -760,7 +760,9 @@ footer{background:var(--black);border-top:1px solid #ffffff0f;flex-wrap:wrap;jus
 #frentes-cuidado .frente-card-head .sol-num{margin-bottom:.35rem}
 #frentes-cuidado .frente-card-head .sol-icon{margin-bottom:.15rem}
 #frentes-cuidado .frente-card-head .plano-tag{margin-left:0;margin-bottom:.25rem;display:inline-block;align-self:flex-start}
-#frentes-cuidado .frente-card-body .urgencia-list{margin-top:1rem}
+#frentes-cuidado .frente-card-body .frente-lead{color:var(--black);font-weight:600;line-height:1.55;margin-bottom:.65rem}
+#frentes-cuidado .frente-card-body .urgencia-list{margin-top:0}
+#frentes-cuidado .frente-card-body .frente-keys li{font-size:max(15px,0.95rem);margin-top:.45rem}
 @media(max-width:900px){#frentes-cuidado .frentes-stack .sol-card{grid-template-columns:1fr}}
 .cta-headline strong{color:var(--red);font-weight:900}
 /* VISÃO PLANO DE SAÚDE (iframe, Tailwind + Chart isolados) */
@@ -1156,7 +1158,7 @@ footer{background:var(--black);border-top:1px solid #ffffff0f;flex-wrap:wrap;jus
     <div class="reveal">
       <p class="eyebrow">As 5 frentes do cuidado</p>
       <h2 class="section-headline">Cinco frentes.<br/><em>Uma inteligência contínua.</em></h2>
-      <p class="section-body" style="max-width:640px;margin-bottom:0.5rem">O desenvolvimento infantil não acontece em nenhum lugar isolado. Ele acontece na escola, na clínica, na sessão com o terapeuta, no dia a dia em casa, e depende do plano que viabiliza tudo isso. O CADU é a primeira plataforma que conecta todas essas frentes em uma trajetória única por criança.</p>
+      <p class="section-body" style="max-width:560px;margin-bottom:0.5rem">Cinco frentes, um só histórico. O CADU conecta escola, clínica, terapeutas, família e plano na mesma trajetória por criança.</p>
     </div>
     <div class="frentes-stack">
       <div class="sol-card frente-card reveal">
@@ -1164,16 +1166,13 @@ footer{background:var(--black);border-top:1px solid #ffffff0f;flex-wrap:wrap;jus
           <span class="sol-num">01</span>
           <span class="sol-icon">👨‍👩‍👧</span>
           <span class="plano-tag">Origem da inteligência</span>
-          <div class="sol-title">Família, onde a inteligência começa</div>
+          <div class="sol-title">Família</div>
         </div>
         <div class="frente-card-body">
-          <p class="sol-body">O CADU acompanha a família desde antes do diagnóstico. O primeiro contato é o ursinho adormecido no app, o CADU dorme até o momento em que a família faz o upload do laudo neuropsicológico. Quando o laudo sobe, ele acorda. E a partir daí, cresce com cada conquista registrada.</p>
-          <p class="sol-body">É a família que alimenta o CADU com a rotina real da criança: comportamentos em casa, marcos de desenvolvimento, mudanças de humor, padrões de sono, dificuldades do dia a dia. Esses dados, combinados com os registros clínicos, constroem a inteligência longitudinal que nenhum sistema isolado consegue ter.</p>
-          <p class="sol-body">A família não precisa ser especialista. O CADU organiza, conecta e apresenta tudo de forma clara, para que os pais possam acompanhar, decidir e compartilhar informações com quem escolherem.</p>
-          <ul class="urgencia-list">
-            <li>Upload do laudo neuropsicológico (ativa o sistema)</li>
-            <li>Registros de rotina, conquistas e marcos</li>
-            <li>Feedback sobre sessões e comportamentos pós-atendimento</li>
+          <p class="sol-body frente-lead">O ursinho no app acorda com o laudo; rotina, marcos e feedback da família alimentam a inteligência longitudinal.</p>
+          <ul class="urgencia-list frente-keys">
+            <li>Laudo neuropsicológico ativa o sistema</li>
+            <li>Rotina e conquistas em casa</li>
             <li>Histórico compartilhável com novos profissionais</li>
           </ul>
         </div>
@@ -1183,17 +1182,14 @@ footer{background:var(--black);border-top:1px solid #ffffff0f;flex-wrap:wrap;jus
           <span class="sol-num">02</span>
           <span class="sol-icon">🏥</span>
           <span class="plano-tag">Hub clínico</span>
-          <div class="sol-title">Clínica, onde o cuidado é estruturado</div>
+          <div class="sol-title">Clínica</div>
         </div>
         <div class="frente-card-body">
-          <p class="sol-body">A clínica é o coração operacional do ecossistema. É onde os atendimentos acontecem, onde as equipes multidisciplinares se organizam, onde os laudos são produzidos e onde as metas terapêuticas são definidas. Mas hoje, tudo isso fica preso dentro de cada clínica, sem saída estruturada para o plano, para a escola ou para a família.</p>
-          <p class="sol-body">Com o CADU, cada sessão realizada alimenta o histórico longitudinal da criança. O profissional registra a evolução após cada atendimento, rápido, direto. O sistema acumula esses registros automaticamente e gera a linha do tempo clínica que nenhum prontuário isolado consegue mostrar.</p>
-          <p class="sol-body">A gestão da clínica passa a ter visibilidade real sobre cada caso: quais crianças estão evoluindo, quais estagnaram, onde há inconsistências entre presença e faturamento. E o plano de saúde, que antes só via o faturamento, passa a ver a evolução.</p>
-          <ul class="urgencia-list">
-            <li>Registros de atendimento estruturados por profissional</li>
-            <li>Metas terapêuticas e evolução longitudinal</li>
-            <li>Dados de presença com validação geolocalizada</li>
-            <li>Histórico unificado por criança, acessível à equipe inteira</li>
+          <p class="sol-body frente-lead">Cada sessão vira linha do tempo clínica. Evolução e presença saem do prontuário isolado e chegam ao ecossistema.</p>
+          <ul class="urgencia-list frente-keys">
+            <li>Registro estruturado por profissional</li>
+            <li>Metas e evolução longitudinal</li>
+            <li>Presença validada por geolocalização</li>
           </ul>
         </div>
       </div>
@@ -1202,17 +1198,14 @@ footer{background:var(--black);border-top:1px solid #ffffff0f;flex-wrap:wrap;jus
           <span class="sol-num">03</span>
           <span class="sol-icon">👩‍⚕️</span>
           <span class="plano-tag">Coordenação clínica</span>
-          <div class="sol-title">Terapeutas, sem recomeçar do zero</div>
+          <div class="sol-title">Terapeutas</div>
         </div>
         <div class="frente-card-body">
-          <p class="sol-body">Um dos maiores pontos de ruptura no neurodesenvolvimento infantil é a troca de terapeuta. Cada nova profissional que chega começa do zero: pede o histórico para a família, que tenta lembrar ou reunir documentos soltos. Sessões valiosas são perdidas em reconstituição de contexto.</p>
-          <p class="sol-body">Com o CADU, a troca de terapeuta não apaga o histórico. Tudo está estruturado, acessível, longitudinal. A nova profissional chega já com contexto: o que foi tentado, o que funcionou, onde houve regressão, qual o perfil sensorial da criança, quais as metas em curso.</p>
-          <p class="sol-body">Além disso, o CADU detecta automaticamente padrões críticos, como quedas de evolução correlacionadas a trocas de profissional ou mudanças de rotina, gerando alertas antes que meses de regressão passem sem ser identificados.</p>
-          <ul class="urgencia-list">
-            <li>Contexto completo ao assumir um caso</li>
-            <li>Menos tempo em alinhamento informal (WhatsApp, reuniões)</li>
-            <li>Registro de metas e progresso por área terapêutica</li>
-            <li>Coordenação automática entre fono, TO, psicólogo, psiquiatra</li>
+          <p class="sol-body frente-lead">Troca de profissional não apaga contexto. A IA alerta regressões ligadas a mudanças na equipe ou na rotina.</p>
+          <ul class="urgencia-list frente-keys">
+            <li>Contexto completo ao assumir o caso</li>
+            <li>Metas por área terapêutica</li>
+            <li>Coordenação entre especialidades</li>
           </ul>
         </div>
       </div>
@@ -1221,17 +1214,14 @@ footer{background:var(--black);border-top:1px solid #ffffff0f;flex-wrap:wrap;jus
           <span class="sol-num">04</span>
           <span class="sol-icon">🎓</span>
           <span class="plano-tag">Inclusão + contexto educacional</span>
-          <div class="sol-title">Escola, onde o desenvolvimento se manifesta</div>
+          <div class="sol-title">Escola</div>
         </div>
         <div class="frente-card-body">
-          <p class="sol-body">A escola é onde os avanços clínicos precisam aparecer na prática, e onde os sinais mais importantes do desenvolvimento real da criança surgem primeiro. Mas hoje, escola e clínica operam em mundos completamente separados. O que acontece na terapia não chega ao professor. O que o professor observa não chega ao terapeuta.</p>
-          <p class="sol-body">O CADU conecta o contexto educacional ao histórico longitudinal da criança. Marcos de inclusão escolar, adaptações curriculares, comportamentos em sala e relatórios pedagógicos entram no mesmo sistema que reúne os dados clínicos, criando uma visão completa que nenhum dos dois atores tinha isoladamente.</p>
-          <p class="sol-body">Para a operadora, isso significa dados sobre efetividade real: a criança está generalizando os avanços terapêuticos para o ambiente escolar? A frequência de sessões está correlacionada com melhora observável na escola? Pela primeira vez, é possível responder a essa pergunta.</p>
-          <ul class="urgencia-list">
+          <p class="sol-body frente-lead">Sala de aula e clínica passam a enxergar a mesma criança. Inclusão e comportamento entram no histórico longitudinal.</p>
+          <ul class="urgencia-list frente-keys">
             <li>Marcos de inclusão e comportamento em sala</li>
-            <li>Alinhamento com metas terapêuticas ativas</li>
-            <li>Relatórios pedagógicos integrados ao histórico</li>
-            <li>Visão do impacto real do tratamento no dia a dia escolar</li>
+            <li>Metas alinhadas à terapia</li>
+            <li>Efetividade visível no ambiente escolar</li>
           </ul>
         </div>
       </div>
@@ -1240,19 +1230,14 @@ footer{background:var(--black);border-top:1px solid #ffffff0f;flex-wrap:wrap;jus
           <span class="sol-num">05</span>
           <span class="sol-icon">🏢</span>
           <span class="plano-tag">Inteligência operacional</span>
-          <div class="sol-title">Plano de Saúde, de custo opaco a investimento inteligente</div>
+          <div class="sol-title">Plano de Saúde</div>
         </div>
         <div class="frente-card-body">
-          <p class="sol-body">O plano de saúde é quem viabiliza o ecossistema inteiro, e quem menos enxerga o que está acontecendo dentro dele. A operadora recebe faturamento, não evolução. Autoriza sessões sem saber se estão funcionando. Paga tratamentos longos sem evidência de progresso. E quando percebe irregularidades, a auditoria já é tardia.</p>
-          <p class="sol-body">Com o CADU, a operadora passa a ter o que nunca teve: visibilidade clínica longitudinal. Não apenas &quot;quantas sessões foram realizadas&quot;, mas &quot;como esta criança evoluiu ao longo de 18 meses, com quais profissionais, em quais áreas, com qual frequência real&quot;.</p>
-          <p class="sol-body">Isso transforma radicalmente a capacidade de gestão: auditoria ativa com antifraude por geolocalização, comparativo de performance entre clínicas credenciadas, detecção precoce de estagnação clínica, e base técnica para revisão de autorizações, não por restrição, mas por inteligência.</p>
-          <ul class="urgencia-list">
-            <li>Evolução clínica longitudinal por criança e por prestador</li>
-            <li>Presença confirmada com check-in geolocalizado</li>
-            <li>Alertas automáticos de inconsistência antes de virar custo</li>
-            <li>Comparativo de performance entre clínicas da rede credenciada</li>
-            <li>Taxa de evolução por área terapêutica e por profissional</li>
-            <li>Base sólida para decisões de autorização e gestão de rede</li>
+          <p class="sol-body frente-lead">De faturamento opaco a evolução clínica visível: rede comparável, antifraude ativo e decisões por evidência.</p>
+          <ul class="urgencia-list frente-keys">
+            <li>Trajetória por criança e prestador</li>
+            <li>Alertas antes de virar custo</li>
+            <li>Gestão de rede por resultado clínico</li>
           </ul>
         </div>
       </div>
@@ -1265,7 +1250,7 @@ footer{background:var(--black);border-top:1px solid #ffffff0f;flex-wrap:wrap;jus
       <div class="cn"><div class="cn-ico">🎓</div><span>Escola</span><span class="cn-tag">Inclusão</span></div>
       <div class="cn"><div class="cn-ico">👩‍⚕️</div><span>Terapeutas</span><span class="cn-tag">Continuidade</span></div>
     </div>
-    <p class="section-body reveal d3" style="text-align:center;max-width:52ch;margin:2rem auto 0">Cada frente alimenta o CADU. O CADU devolve inteligência para todas elas. Pela primeira vez, o ecossistema inteiro enxerga a mesma criança.</p>
+    <p class="section-body reveal d3" style="text-align:center;max-width:44ch;margin:2rem auto 0">Cada frente alimenta o CADU. O ecossistema inteiro enxerga a mesma criança.</p>
   </div>
 </section>
 
