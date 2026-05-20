@@ -753,38 +753,9 @@ footer{background:var(--black);border-top:1px solid #ffffff0f;flex-wrap:wrap;jus
 .sol-grid-5 .sol-card:nth-child(5){grid-column:2}
 @media(max-width:980px){.sol-grid-5 .sol-card:nth-child(4),.sol-grid-5 .sol-card:nth-child(5){grid-column:auto}}
 
-/* 5 frentes: grade 3 + 2 (dois cards centralizados na segunda linha) */
-#frentes-cuidado .frentes-stack{
-  display:grid;
-  grid-template-columns:repeat(6,minmax(0,1fr));
-  gap:1.1rem;
-  margin-top:2.5rem;
-}
-#frentes-cuidado .frentes-stack .sol-card{
-  grid-column:span 2;
-  display:flex;
-  flex-direction:column;
-  min-height:100%;
-}
-#frentes-cuidado .frente-card:nth-child(4){grid-column:2 / span 2}
-#frentes-cuidado .frente-card:nth-child(5){grid-column:4 / span 2}
-#frentes-cuidado .frente-card-head{display:flex;flex-direction:column;gap:.35rem}
-#frentes-cuidado .frente-card-head .sol-num{margin-bottom:.35rem}
-#frentes-cuidado .frente-card-head .sol-icon{margin-bottom:.15rem}
-#frentes-cuidado .frente-card-head .plano-tag{margin-left:0;margin-bottom:.25rem;display:inline-block;align-self:flex-start}
-#frentes-cuidado .frente-card-body{flex:1;display:flex;flex-direction:column}
-#frentes-cuidado .frente-card-body .frente-lead{color:var(--black);font-weight:600;line-height:1.55;margin-bottom:.65rem;font-size:max(15px,0.95rem)}
-#frentes-cuidado .frente-card-body .urgencia-list{margin-top:auto;padding-top:.35rem}
-#frentes-cuidado .frente-card-body .frente-keys li{font-size:max(14px,0.9rem);margin-top:.4rem}
-@media(max-width:980px){
-  #frentes-cuidado .frentes-stack{grid-template-columns:repeat(2,minmax(0,1fr))}
-  #frentes-cuidado .frentes-stack .sol-card{grid-column:span 1}
-  #frentes-cuidado .frente-card:nth-child(4),
-  #frentes-cuidado .frente-card:nth-child(5){grid-column:auto}
-}
-@media(max-width:640px){
-  #frentes-cuidado .frentes-stack{grid-template-columns:1fr}
-}
+/* Ecossistema: protótipo cadu-roles (iframe isolado) */
+#frentes-cuidado .portal-embed{margin-top:0}
+#frentes-cuidado .portal-embed iframe{min-height:min(92vh,980px);background:#f5ecff}
 .cta-headline strong{color:var(--red);font-weight:900}
 /* VISÃO PLANO DE SAÚDE (iframe, Tailwind + Chart isolados) */
 .portal-embed{margin-top:2.5rem;border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--border-md);box-shadow:var(--shadow-lg);background:#fafaf8;position:relative}
@@ -1176,102 +1147,9 @@ footer{background:var(--black);border-top:1px solid #ffffff0f;flex-wrap:wrap;jus
 
 <section id="frentes-cuidado" class="sec sec-white">
   <div class="wrap">
-    <div class="reveal">
-      <p class="eyebrow">As 5 frentes do cuidado</p>
-      <h2 class="section-headline">Cinco frentes.<br/><em>Uma inteligência contínua.</em></h2>
-      <p class="section-body" style="max-width:560px;margin-bottom:0.5rem">Cinco frentes, um só histórico. O CADU conecta escola, clínica, terapeutas, família e plano na mesma trajetória por criança.</p>
+    <div class="portal-embed reveal">
+      <iframe id="cadu-roles-frame" src="cadu-roles.html" title="CADU: protótipo por perfil (Supervisor, Terapeuta, Família, Escola)" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
     </div>
-    <div class="frentes-stack">
-      <div class="sol-card frente-card reveal">
-        <div class="frente-card-head">
-          <span class="sol-num">01</span>
-          <span class="sol-icon">👨‍👩‍👧</span>
-          <span class="plano-tag">Origem da inteligência</span>
-          <div class="sol-title">Família</div>
-        </div>
-        <div class="frente-card-body">
-          <p class="sol-body frente-lead">O ursinho no app acorda com o laudo; rotina, marcos e feedback da família alimentam a inteligência longitudinal.</p>
-          <ul class="urgencia-list frente-keys">
-            <li>Laudo neuropsicológico ativa o sistema</li>
-            <li>Rotina e conquistas em casa</li>
-            <li>Histórico compartilhável com novos profissionais</li>
-          </ul>
-        </div>
-      </div>
-      <div class="sol-card frente-card reveal d1">
-        <div class="frente-card-head">
-          <span class="sol-num">02</span>
-          <span class="sol-icon">🏥</span>
-          <span class="plano-tag">Hub clínico</span>
-          <div class="sol-title">Clínica</div>
-        </div>
-        <div class="frente-card-body">
-          <p class="sol-body frente-lead">Cada sessão vira linha do tempo clínica. Evolução e presença saem do prontuário isolado e chegam ao ecossistema.</p>
-          <ul class="urgencia-list frente-keys">
-            <li>Registro estruturado por profissional</li>
-            <li>Metas e evolução longitudinal</li>
-            <li>Presença validada por geolocalização</li>
-          </ul>
-        </div>
-      </div>
-      <div class="sol-card frente-card reveal d2">
-        <div class="frente-card-head">
-          <span class="sol-num">03</span>
-          <span class="sol-icon">👩‍⚕️</span>
-          <span class="plano-tag">Coordenação clínica</span>
-          <div class="sol-title">Terapeutas</div>
-        </div>
-        <div class="frente-card-body">
-          <p class="sol-body frente-lead">Troca de profissional não apaga contexto. A IA alerta regressões ligadas a mudanças na equipe ou na rotina.</p>
-          <ul class="urgencia-list frente-keys">
-            <li>Contexto completo ao assumir o caso</li>
-            <li>Metas por área terapêutica</li>
-            <li>Coordenação entre especialidades</li>
-          </ul>
-        </div>
-      </div>
-      <div class="sol-card frente-card reveal">
-        <div class="frente-card-head">
-          <span class="sol-num">04</span>
-          <span class="sol-icon">🎓</span>
-          <span class="plano-tag">Inclusão + contexto educacional</span>
-          <div class="sol-title">Escola</div>
-        </div>
-        <div class="frente-card-body">
-          <p class="sol-body frente-lead">Sala de aula e clínica passam a enxergar a mesma criança. Inclusão e comportamento entram no histórico longitudinal.</p>
-          <ul class="urgencia-list frente-keys">
-            <li>Marcos de inclusão e comportamento em sala</li>
-            <li>Metas alinhadas à terapia</li>
-            <li>Efetividade visível no ambiente escolar</li>
-          </ul>
-        </div>
-      </div>
-      <div class="sol-card frente-card reveal d1">
-        <div class="frente-card-head">
-          <span class="sol-num">05</span>
-          <span class="sol-icon">🏢</span>
-          <span class="plano-tag">Inteligência operacional</span>
-          <div class="sol-title">Plano de Saúde</div>
-        </div>
-        <div class="frente-card-body">
-          <p class="sol-body frente-lead">De faturamento opaco a evolução clínica visível: rede comparável, antifraude ativo e decisões por evidência.</p>
-          <ul class="urgencia-list frente-keys">
-            <li>Trajetória por criança e prestador</li>
-            <li>Alertas antes de virar custo</li>
-            <li>Gestão de rede por resultado clínico</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-    <div class="conn-diag reveal d2" style="margin-top:3.5rem">
-      <div class="cn"><div class="cn-ico">👨‍👩‍👧</div><span>Família</span><span class="cn-tag">Origem dos dados</span></div>
-      <div class="cn center-node"><div class="cn-ico">⚡</div><span>CADU</span><span class="cn-tag">Inteligência longitudinal</span></div>
-      <div class="cn"><div class="cn-ico">🏥</div><span>Clínica</span><span class="cn-tag">Hub clínico</span></div>
-      <div class="cn"><div class="cn-ico">🏢</div><span>Plano</span><span class="cn-tag">Visibilidade</span></div>
-      <div class="cn"><div class="cn-ico">🎓</div><span>Escola</span><span class="cn-tag">Inclusão</span></div>
-      <div class="cn"><div class="cn-ico">👩‍⚕️</div><span>Terapeutas</span><span class="cn-tag">Continuidade</span></div>
-    </div>
-    <p class="section-body reveal d3" style="text-align:center;max-width:44ch;margin:2rem auto 0">Cada frente alimenta o CADU. O ecossistema inteiro enxerga a mesma criança.</p>
   </div>
 </section>
 
@@ -1676,6 +1554,28 @@ document.querySelectorAll('.reveal').forEach(el => io.observe(el));
   });
   document.addEventListener('keydown', function(e){
     if(e.key === 'Escape') setNavOpen(false);
+  });
+})();
+
+(function(){
+  var frame = document.getElementById('cadu-roles-frame');
+  if(!frame) return;
+  function resizeRolesFrame(){
+    try{
+      var doc = frame.contentDocument;
+      if(!doc) return;
+      var h = Math.max(doc.documentElement.scrollHeight, doc.body ? doc.body.scrollHeight : 0, 720);
+      frame.style.height = h + 'px';
+    }catch(e){}
+  }
+  frame.addEventListener('load', function(){
+    resizeRolesFrame();
+    try{ frame.contentWindow.addEventListener('hashchange', resizeRolesFrame); }catch(e){}
+    var t = 0;
+    var poll = setInterval(function(){
+      resizeRolesFrame();
+      if(++t > 12) clearInterval(poll);
+    }, 400);
   });
 })();
 
