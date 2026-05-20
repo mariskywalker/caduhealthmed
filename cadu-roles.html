@@ -617,14 +617,38 @@
       ];
 
       const PARENT_EVOLUTION = [
-        { date: "01/04", communication: 4, social_interaction: 3, emotional_regulation: 5, motor_skills: 4 },
-        { date: "08/04", communication: 5, social_interaction: 4, emotional_regulation: 5, motor_skills: 5 },
-        { date: "15/04", communication: 5, social_interaction: 5, emotional_regulation: 6, motor_skills: 5 },
-        { date: "22/04", communication: 6, social_interaction: 5, emotional_regulation: 6, motor_skills: 6 },
-        { date: "29/04", communication: 7, social_interaction: 6, emotional_regulation: 7, motor_skills: 6 },
-        { date: "06/05", communication: 7, social_interaction: 7, emotional_regulation: 7, motor_skills: 7 },
-        { date: "13/05", communication: 8, social_interaction: 7, emotional_regulation: 8, motor_skills: 7 },
+        { date: "01/04", communication: 4, social_interaction: 3, emotional_regulation: 5, motor_skills: 4, attention_focus: 3, autonomy: 3 },
+        { date: "08/04", communication: 5, social_interaction: 4, emotional_regulation: 5, motor_skills: 5, attention_focus: 4, autonomy: 4 },
+        { date: "15/04", communication: 5, social_interaction: 5, emotional_regulation: 6, motor_skills: 5, attention_focus: 4, autonomy: 4 },
+        { date: "22/04", communication: 6, social_interaction: 5, emotional_regulation: 6, motor_skills: 6, attention_focus: 5, autonomy: 5 },
+        { date: "29/04", communication: 7, social_interaction: 6, emotional_regulation: 7, motor_skills: 6, attention_focus: 6, autonomy: 5 },
+        { date: "06/05", communication: 7, social_interaction: 7, emotional_regulation: 7, motor_skills: 7, attention_focus: 6, autonomy: 6 },
+        { date: "13/05", communication: 8, social_interaction: 7, emotional_regulation: 8, motor_skills: 7, attention_focus: 7, autonomy: 7 },
       ];
+
+      // Metadata para Evolução — bate com lib/types METRIC_KEYS/METRIC_LABELS e cores do EvolutionCharts.tsx
+      const METRIC_LABELS = {
+        communication: "Comunica\u00e7\u00e3o",
+        social_interaction: "Intera\u00e7\u00e3o social",
+        emotional_regulation: "Regula\u00e7\u00e3o emocional",
+        motor_skills: "Habilidades motoras",
+        attention_focus: "Aten\u00e7\u00e3o / Foco",
+        autonomy: "Autonomia",
+      };
+      const METRIC_KEYS = Object.keys(METRIC_LABELS);
+      const METRIC_COLORS_FULL = {
+        communication: { line: "#5900FF", pastel: "#EDE5FF", dark: "#3A0099" },
+        social_interaction: { line: "#FF6B6B", pastel: "#FFE5E5", dark: "#991B1B" },
+        emotional_regulation: { line: "#00C49F", pastel: "#E0FFF6", dark: "#064E3B" },
+        motor_skills: { line: "#FFBB28", pastel: "#FFF5D6", dark: "#78350F" },
+        attention_focus: { line: "#0088FE", pastel: "#E0F0FF", dark: "#003F7F" },
+        autonomy: { line: "#FF8042", pastel: "#FFE8D6", dark: "#7C2D12" },
+      };
+      const evolutionState = {
+        view: "lines",
+        activeMetrics: new Set(METRIC_KEYS),
+        chart: null,
+      };
 
       const THERAPIST_PATIENTS = [
         { id: "ana", name: "Ana Beatriz Souza", initials: "AB" },
@@ -927,7 +951,9 @@
       function getHashRoute() {
         const h = (location.hash || "").replace(/^#\/?/, "");
         if (!h || h === "hub") return { role: null, page: "hub" };
-        const [role, page] = h.split("/");
+        const idx = h.indexOf("/");
+        const role = idx === -1 ? h : h.substring(0, idx);
+        const page = idx === -1 ? "" : h.substring(idx + 1);
         if (!ROLES[role]) return { role: null, page: "hub" };
         return { role, page: page || ROLES[role].nav[0].href.split("/")[1] };
       }
@@ -1311,42 +1337,235 @@
         `;
       }
 
-      function pageParentEvolution() {
-        return `
-          <div class="flex flex-col gap-2">
-            ${pageHeader("Evolu&ccedil;&atilde;o", "&Iacute;ndices das &uacute;ltimas 7 semanas (Ana Beatriz)")}
-            <div class="bg-white/60 rounded-[16px] px-4 pt-4 pb-3 flex flex-col gap-3">
-              <p class="text-[14px] font-semibold text-ink-900" style="font-family:'Work Sans',sans-serif">M&eacute;tricas de desenvolvimento</p>
-              <div class="bg-white/60 rounded-[14px] px-4 py-3">
-                <div class="relative h-[320px]">
-                  <canvas id="parent-evolution-chart-full"></canvas>
+      function evolutionSummaryChips() {
+        return METRIC_KEYS.map((key) => {
+          const values = PARENT_EVOLUTION.map((p) => p[key]).filter((v) => v !== null && v !== undefined);
+          if (values.length === 0) return "";
+          const latest = values[values.length - 1];
+          const first = values[0];
+          const diff = latest - first;
+          const c = METRIC_COLORS_FULL[key];
+          const diffCls = diff > 0 ? "text-green-600" : diff < 0 ? "text-red-500" : "text-ink-400";
+          const diffText = diff > 0 ? "+" + diff : diff === 0 ? "=" : String(diff);
+          return `<div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-[10px] border" style="background-color:${c.pastel};border-color:${c.dark}30">
+            <span class="text-xs font-medium" style="color:${c.dark}">${METRIC_LABELS[key]}</span>
+            <span class="text-xs font-bold" style="color:${c.dark}">${latest}</span>
+            ${values.length > 1 ? `<span class="text-xs font-medium ${diffCls}">${diffText}</span>` : ""}
+          </div>`;
+        }).join("");
+      }
+
+      function evolutionMetricFilterPills() {
+        return METRIC_KEYS.map((key) => {
+          const active = evolutionState.activeMetrics.has(key);
+          const c = METRIC_COLORS_FULL[key];
+          const style = active
+            ? `background-color:${c.pastel};color:${c.dark};border-color:${c.dark}4D`
+            : `background-color:rgba(255,255,255,0.6);color:#aaa;border-color:transparent`;
+          return `<button data-metric-toggle="${key}" class="px-2.5 py-1 text-xs font-medium rounded-full border transition-all" style="${style}">${METRIC_LABELS[key]}</button>`;
+        }).join("");
+      }
+
+      function evolutionDetailCards() {
+        return METRIC_KEYS.filter((k) => evolutionState.activeMetrics.has(k))
+          .map((key) => {
+            const values = PARENT_EVOLUTION.map((p) => p[key]).filter((v) => v !== null && v !== undefined);
+            if (values.length === 0) return "";
+            const latest = values[values.length - 1];
+            const first = values[0];
+            const diff = latest - first;
+            const avg = Math.round((values.reduce((a, b) => a + b, 0) / values.length) * 10) / 10;
+            const c = METRIC_COLORS_FULL[key];
+            const diffCls = diff > 0 ? "text-green-600" : diff < 0 ? "text-red-500" : "text-ink-400";
+            const diffText = diff > 0 ? `+${diff}` : diff === 0 ? "Est\u00e1vel" : String(diff);
+            return `<div class="bg-white/60 rounded-[16px] p-3">
+              <div class="bg-white/60 rounded-[12px] p-3">
+                <div class="flex items-center justify-between mb-2">
+                  <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full" style="background-color:${c.line}"></div>
+                    <span class="text-sm font-medium text-ink-800">${METRIC_LABELS[key]}</span>
+                  </div>
+                  <span class="text-lg font-bold text-ink-900">${latest}<span class="text-xs text-ink-400 font-normal">/10</span></span>
+                </div>
+                <div class="flex gap-4">
+                  <div><p class="text-xs text-ink-400">M&eacute;dia</p><p class="text-xs font-medium text-ink-700">${avg}</p></div>
+                  <div><p class="text-xs text-ink-400">Progresso</p><p class="text-xs font-medium ${diffCls}">${diffText}</p></div>
+                  <div><p class="text-xs text-ink-400">Avalia&ccedil;&otilde;es</p><p class="text-xs font-medium text-ink-700">${values.length}</p></div>
+                </div>
+                <div class="mt-2.5 h-1.5 bg-ink-100 rounded-full overflow-hidden">
+                  <div class="h-full rounded-full" style="width:${(latest / 10) * 100}%;background-color:${c.line}"></div>
                 </div>
               </div>
+            </div>`;
+          })
+          .join("");
+      }
+
+      function pageParentEvolution() {
+        const isLines = evolutionState.view === "lines";
+        return `
+          <div class="flex flex-col gap-2">
+            ${pageHeader("Evolu&ccedil;&atilde;o", "&Iacute;ndices das &uacute;ltimas 7 semanas (Ana Beatriz Souza)")}
+
+            <!-- A&ccedil;&otilde;es r&aacute;pidas -->
+            <div class="flex flex-wrap gap-2 px-1">
+              <a class="text-xs font-semibold px-3 py-1.5 rounded-full bg-accent-purple/15 text-accent-purple hover:bg-accent-purple/25 transition-colors cursor-pointer">Ver PEI</a>
+              <a class="text-xs font-semibold px-3 py-1.5 rounded-full bg-teal-500/15 text-teal-800 hover:bg-teal-500/25 transition-colors cursor-pointer">Ver neuropsicol&oacute;gico</a>
+              <a class="text-xs font-semibold px-3 py-1.5 rounded-full bg-amber-500/15 text-amber-900 hover:bg-amber-500/25 transition-colors cursor-pointer">Ver relat&oacute;rios</a>
             </div>
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-2">
-              ${[
-                { label: "Comunica&ccedil;&atilde;o", value: 8, color: "#5900FF" },
-                { label: "Intera&ccedil;&atilde;o social", value: 7, color: "#FF6B6B" },
-                { label: "Regula&ccedil;&atilde;o emocional", value: 8, color: "#00C49F" },
-                { label: "Motor", value: 7, color: "#FFBB28" },
-              ]
-                .map(
-                  (m) => `
-                <div class="bg-white/60 rounded-[16px] p-4 flex flex-col gap-2">
-                  <div class="flex items-center justify-between">
-                    <div class="w-8 h-8 rounded-full" style="background-color:${m.color}20"></div>
-                    <span class="text-2xl font-bold text-ink-900 tabular-nums">${m.value}<span class="text-sm text-ink-400">/10</span></span>
+
+            <!-- Resumo geral -->
+            <div class="bg-white/60 rounded-[16px] p-3">
+              <div class="bg-white/60 rounded-[12px] p-3">
+                <p class="text-xs text-ink-400 mb-1">Resumo geral</p>
+                <p class="text-sm text-ink-700">
+                  ${PARENT_EVOLUTION.length} avalia&ccedil;&otilde;es registradas para
+                  <span class="font-medium text-ink-900">Ana Beatriz Souza</span>
+                </p>
+                <div class="flex flex-wrap gap-2 mt-3">${evolutionSummaryChips()}</div>
+              </div>
+            </div>
+
+            <!-- Toggle de visualiza&ccedil;&atilde;o + filtro de m&eacute;tricas -->
+            <div class="bg-white/60 rounded-[16px] p-[8px] flex flex-col gap-2">
+              <div class="bg-white/60 rounded-[12px] p-1.5">
+                <div class="flex gap-1">
+                  <button data-evo-view="lines" class="flex-1 py-2 text-xs font-medium rounded-[10px] transition-colors ${isLines ? "bg-white text-ink-900 shadow-sm" : "text-ink-500"}">Evolu&ccedil;&atilde;o no tempo</button>
+                  <button data-evo-view="radar" class="flex-1 py-2 text-xs font-medium rounded-[10px] transition-colors ${!isLines ? "bg-white text-ink-900 shadow-sm" : "text-ink-500"}">Vis&atilde;o geral</button>
+                </div>
+              </div>
+              ${
+                isLines
+                  ? `<div class="bg-white/60 rounded-[12px] p-3">
+                <p class="text-xs font-semibold text-ink-400 uppercase tracking-wider mb-2">M&eacute;tricas</p>
+                <div class="flex flex-wrap gap-1.5">${evolutionMetricFilterPills()}</div>
+              </div>`
+                  : ""
+              }
+            </div>
+
+            ${
+              isLines
+                ? `<div class="bg-white/60 rounded-[16px] p-3">
+                  <div class="bg-white/60 rounded-[12px] p-3">
+                    <div class="relative h-[260px]"><canvas id="parent-evolution-chart"></canvas></div>
                   </div>
-                  <p class="text-xs text-ink-500">${m.label}</p>
-                  <div class="h-1.5 rounded-full bg-ink-100 overflow-hidden">
-                    <div class="h-full rounded-full" style="background-color:${m.color};width:${m.value * 10}%"></div>
+                </div>
+                ${evolutionDetailCards()}`
+                : `<div class="bg-white/60 rounded-[16px] p-3">
+                  <div class="bg-white/60 rounded-[12px] p-3">
+                    <p class="text-xs text-ink-400 mb-2 text-center">&Uacute;ltima avalia&ccedil;&atilde;o</p>
+                    <div class="relative h-[320px]"><canvas id="parent-evolution-radar"></canvas></div>
                   </div>
                 </div>`
-                )
-                .join("")}
-            </div>
+            }
           </div>
         `;
+      }
+
+      function renderParentEvolutionChart() {
+        if (evolutionState.chart) {
+          evolutionState.chart.destroy();
+          evolutionState.chart = null;
+        }
+        if (evolutionState.view === "lines") {
+          const canvas = document.getElementById("parent-evolution-chart");
+          if (!canvas) return;
+          const activeKeys = METRIC_KEYS.filter((k) => evolutionState.activeMetrics.has(k));
+          evolutionState.chart = new Chart(canvas, {
+            type: "line",
+            data: {
+              labels: PARENT_EVOLUTION.map((p) => p.date),
+              datasets: activeKeys.map((key) => ({
+                label: METRIC_LABELS[key],
+                data: PARENT_EVOLUTION.map((p) => p[key]),
+                borderColor: METRIC_COLORS_FULL[key].line,
+                backgroundColor: METRIC_COLORS_FULL[key].line + "20",
+                tension: 0.35,
+                borderWidth: 2,
+                pointRadius: 3,
+              })),
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { position: "bottom", labels: { font: { size: 11 }, color: "#6B6B6B", boxWidth: 10, padding: 10 } },
+                tooltip: { backgroundColor: "rgba(255,255,255,0.95)", titleColor: "#161616", bodyColor: "#333", borderColor: "#eee", borderWidth: 1, cornerRadius: 12, padding: 12 },
+              },
+              scales: {
+                y: { min: 0, max: 10, ticks: { color: "#999", font: { size: 11 } }, grid: { color: "#f0f0f0" } },
+                x: { ticks: { color: "#999", font: { size: 11 } }, grid: { display: false } },
+              },
+            },
+          });
+        } else {
+          const canvas = document.getElementById("parent-evolution-radar");
+          if (!canvas) return;
+          const latest = PARENT_EVOLUTION[PARENT_EVOLUTION.length - 1];
+          evolutionState.chart = new Chart(canvas, {
+            type: "radar",
+            data: {
+              labels: METRIC_KEYS.map((k) => METRIC_LABELS[k]),
+              datasets: [
+                {
+                  label: "\u00daltima avalia\u00e7\u00e3o",
+                  data: METRIC_KEYS.map((k) => latest[k]),
+                  backgroundColor: "rgba(89,0,255,0.20)",
+                  borderColor: "#5900FF",
+                  borderWidth: 2,
+                  pointBackgroundColor: "#5900FF",
+                  pointRadius: 3,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                r: {
+                  min: 0,
+                  max: 10,
+                  ticks: { stepSize: 2, color: "#bbb", backdropColor: "transparent", font: { size: 10 } },
+                  grid: { color: "#eee" },
+                  angleLines: { color: "#eee" },
+                  pointLabels: { font: { size: 11 }, color: "#666" },
+                },
+              },
+              plugins: { legend: { display: false } },
+            },
+          });
+        }
+      }
+
+      function setupParentEvolutionPage() {
+        document.querySelectorAll("[data-evo-view]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const v = btn.getAttribute("data-evo-view");
+            if (v !== evolutionState.view) {
+              evolutionState.view = v;
+              rerenderParentEvolution();
+            }
+          });
+        });
+        document.querySelectorAll("[data-metric-toggle]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const key = btn.getAttribute("data-metric-toggle");
+            if (evolutionState.activeMetrics.has(key)) {
+              if (evolutionState.activeMetrics.size > 1) evolutionState.activeMetrics.delete(key);
+            } else {
+              evolutionState.activeMetrics.add(key);
+            }
+            rerenderParentEvolution();
+          });
+        });
+        renderParentEvolutionChart();
+      }
+
+      function rerenderParentEvolution() {
+        const content = document.getElementById("page-content");
+        content.innerHTML = `<div class="anim-fade-in">${pageParentEvolution()}</div>`;
+        setupParentEvolutionPage();
       }
 
       // ─── THERAPIST pages ───
@@ -1866,70 +2085,271 @@
         `;
       }
 
+      // Conteúdos sintéticos por criança para a página de detalhe da escola
+      const SCHOOL_CHILD_DETAIL = {
+        ana: {
+          isPending: false,
+          alerts: [
+            {
+              date: "18 mai 2026",
+              text: "Em momentos de transi\u00e7\u00e3o longa (do recreio para atividade dirigida) Ana est\u00e1 apresentando crises de choro. Estrat\u00e9gia atual: avisar 5 min antes + objeto de transi\u00e7\u00e3o.",
+            },
+          ],
+          brief: {
+            diagnosis:
+              "TEA n\u00edvel 1 de suporte (CID F84.0), confirmado por equipe multidisciplinar em mar\u00e7o de 2025. Acompanhamento regular em TO, fonoaudiologia e psicologia na Casa do Urso.",
+            triggers:
+              "Sons altos e inesperados, transi\u00e7\u00f5es n\u00e3o avisadas, ambientes muito cheios. Acalma-se com cantinho sensorial, m\u00fasica suave ou conversa em tom baixo.",
+            goals:
+              "1) Usar frases de 3+ palavras em pedidos espont\u00e2neos. 2) Aumentar tempo de aten\u00e7\u00e3o em atividade dirigida para 12 min. 3) Aceitar 2 texturas novas no almo\u00e7o.",
+            adaptations:
+              "Posicionar pr\u00f3xima da professora para apoio visual. Avisar com 5 min sobre transi\u00e7\u00f5es. Permitir fone abafador em momentos sensoriais. Material com letras grandes e contraste alto.",
+          },
+          weeklyTip: {
+            date: "19 mai 2026",
+            text: "Esta semana sugerimos refor\u00e7ar elogios espec\u00edficos (\u201cVoc\u00ea olhou para a Helena enquanto falou, muito bom!\u201d) em vez de gen\u00e9ricos (\u201cMuito bem!\u201d). Ajuda Ana a entender qual comportamento foi elogiado.",
+          },
+          monthlySummaries: [
+            {
+              date: "30 abr 2026",
+              text: "Abril foi um m\u00eas de avan\u00e7os not\u00e1veis em comunica\u00e7\u00e3o. Ana iniciou pedidos espont\u00e2neos em 4 sess\u00f5es e demonstrou maior toler\u00e2ncia a est\u00edmulos sensoriais. Seguimos com foco em regula\u00e7\u00e3o emocional em situa\u00e7\u00f5es n\u00e3o estruturadas.",
+            },
+            {
+              date: "31 mar 2026",
+              text: "Mar\u00e7o marcou o in\u00edcio do trabalho com texturas no almo\u00e7o. Ana j\u00e1 aceita massa de tomate e arroz com legumes pequenos. Pr\u00f3ximo objetivo: aceitar pelo menos um vegetal verde.",
+            },
+          ],
+          observations: [
+            {
+              month: "Maio de 2026",
+              attendance: 4,
+              behavior:
+                "Ana se engajou bem nas atividades em grupo, conseguiu esperar a vez 3 de 4 vezes nos jogos de tabuleiro.",
+              challenges:
+                "Episodo de choro no p\u00e1tio quando come\u00e7ou a chover sem avisar; usamos o cantinho sensorial.",
+              wins: "Pediu \u201c\u00e1gua, por favor\u201d espontaneamente na hora do lanche. Primeira vez!",
+              tags: ["socializa\u00e7\u00e3o", "comunica\u00e7\u00e3o"],
+            },
+            {
+              month: "Abril de 2026",
+              attendance: 5,
+              behavior:
+                "M\u00eas com excelente engajamento. Interagiu com 2 colegas novos e seguiu a rotina sem suporte 1:1 nas 2 \u00faltimas semanas.",
+              challenges: "Resist\u00eancia a usar guache em alguns dias \u2014 alternamos com giz de cera.",
+              wins: "Conseguiu se vestir sozinha ap\u00f3s a aula de educa\u00e7\u00e3o f\u00edsica em 3 oportunidades.",
+              tags: ["autonomia", "rotina"],
+            },
+          ],
+        },
+        pedro: {
+          isPending: false,
+          alerts: [],
+          brief: {
+            diagnosis:
+              "TDAH apresenta\u00e7\u00e3o combinada (CID F90.0), diagnosticado em janeiro de 2026. Sem uso de medica\u00e7\u00e3o no momento por op\u00e7\u00e3o da fam\u00edlia, com revis\u00e3o semestral.",
+            triggers:
+              "Atividades muito longas sem pausa, tarefas sem retorno imediato. Responde bem a cronogramas visuais e pequenos intervalos a cada 10\u201315 min.",
+            goals:
+              "1) Concluir 2 atividades dirigidas seguidas sem reorienta\u00e7\u00e3o. 2) Aguardar a vez em jogos coletivos. 3) Organizar materiais ao final de cada per\u00edodo.",
+            adaptations:
+              "Pausa motora a cada 15 min. Lista visual de pr\u00f3ximos passos na mesa. Pode ficar de p\u00e9 ao escrever. Comandos curtos e objetivos.",
+          },
+          weeklyTip: null,
+          monthlySummaries: [
+            {
+              date: "30 abr 2026",
+              text: "Pedro evoluiu bem em concentra\u00e7\u00e3o curta, mas ainda apresenta dificuldade em fechar tarefas. Sugerimos usar timer visual em sala.",
+            },
+          ],
+          observations: [
+            {
+              month: "Maio de 2026",
+              attendance: 4,
+              behavior: "Mais participativo desde a introdu\u00e7\u00e3o do timer visual.",
+              challenges: "Levantou-se 6 vezes da cadeira numa atividade de 20 min.",
+              wins: "Lembrou-se sozinho de guardar o material ao final da aula em 2 dias.",
+              tags: ["aten\u00e7\u00e3o", "autonomia"],
+            },
+          ],
+        },
+        sofia: { isPending: true, alerts: [], brief: null, weeklyTip: null, monthlySummaries: [], observations: [] },
+        helena: {
+          isPending: false,
+          alerts: [],
+          brief: {
+            diagnosis: "Em investiga\u00e7\u00e3o. Hip\u00f3tese atual: atraso global de desenvolvimento leve.",
+            triggers: "Cansa\u00e7o ao final do dia. Tarefas com instru\u00e7\u00e3o verbal longa.",
+            goals: "1) Ampliar vocabul\u00e1rio expressivo. 2) Coordena\u00e7\u00e3o motora grossa.",
+            adaptations: "Atividades em duplas, modelagem antes da execu\u00e7\u00e3o, refor\u00e7o positivo frequente.",
+          },
+          weeklyTip: null,
+          monthlySummaries: [],
+          observations: [],
+        },
+        miguel: { isPending: true, alerts: [], brief: null, weeklyTip: null, monthlySummaries: [], observations: [] },
+      };
+
+      const SCHOOL_ICONS = {
+        diagnosis: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5900FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>',
+        triggers: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FF6B00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+        goals: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00A676" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+        adaptations: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5900FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>',
+        monthly: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5900FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
+        tip: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFB800" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg>',
+        alert: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F74E45" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>',
+        observation: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5900FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',
+      };
+
+      function schoolStarRating(value) {
+        return `<div class="flex gap-0.5">${[1, 2, 3, 4, 5]
+          .map(
+            (n) =>
+              `<svg class="w-4 h-4 ${n <= value ? "text-amber-400" : "text-ink-200"}" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`
+          )
+          .join("")}</div>`;
+      }
+
+      function schoolSection(title, iconKey, body, accent = "bg-accent-purple/10") {
+        return `<div class="bg-white/60 rounded-[16px] px-4 py-3">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-7 h-7 rounded-full ${accent} flex items-center justify-center shrink-0">${SCHOOL_ICONS[iconKey]}</div>
+            <p class="text-sm font-semibold text-ink-900">${title}</p>
+          </div>
+          ${body}
+        </div>`;
+      }
+
       function pageSchoolChild(id) {
         const c = SCHOOL_CHILDREN.find((x) => x.id === id) || SCHOOL_CHILDREN[0];
+        const d = SCHOOL_CHILD_DETAIL[c.id] || SCHOOL_CHILD_DETAIL.ana;
+        const peiEnabled = !d.isPending;
+        const briefField = (val) =>
+          val
+            ? `<p class="text-sm text-ink-700 whitespace-pre-wrap leading-relaxed">${val}</p>`
+            : `<p class="text-xs text-ink-400 italic">N\u00e3o compartilhado</p>`;
+
         return `
-          <div class="flex flex-col gap-2">
+          <div class="flex flex-col gap-2 pb-2">
+            <!-- Back + t&iacute;tulo -->
             <div class="flex items-center gap-2 px-1">
-              <a href="#school/home" data-go="school/home" class="w-8 h-8 rounded-full bg-white/60 flex items-center justify-center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></a>
-              <p class="text-[22px] font-bold text-ink-900">${c.name}</p>
+              <a href="#school/home" data-go="school/home" class="w-8 h-8 rounded-full bg-white/60 flex items-center justify-center hover:bg-white/80"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></a>
+              <p class="text-[22px] font-bold text-ink-900">Crian&ccedil;a</p>
             </div>
-            <div class="bg-white/60 rounded-[16px] p-4 flex items-center gap-4">
-              <div class="w-16 h-16 rounded-full bg-accent-purple/15 text-accent-purple flex items-center justify-center text-2xl font-bold shrink-0">${c.initials}</div>
+
+            ${
+              d.isPending
+                ? `<div class="text-sm text-amber-900 bg-amber-50 border border-amber-200 rounded-[14px] px-4 py-3">
+                <p class="font-semibold">Aguardando aprova&ccedil;&atilde;o da fam&iacute;lia</p>
+                <p class="text-xs text-amber-800/90 mt-1 leading-relaxed">A conex&atilde;o com esta crian&ccedil;a foi convidada, mas a fam&iacute;lia ainda precisa aprovar em <span class="font-medium">Escola da crian&ccedil;a</span> no app. Depois disso, o compartilhamento passa a valer conforme o combinado.</p>
+              </div>`
+                : ""
+            }
+
+            <!-- Header da crian&ccedil;a -->
+            <div class="bg-white/60 rounded-[16px] px-4 py-4 flex items-center gap-3">
+              <div class="w-12 h-12 rounded-full bg-accent-purple/15 text-accent-purple flex items-center justify-center text-base font-bold shrink-0">${c.initials}</div>
               <div class="flex-1 min-w-0">
-                <p class="text-lg font-bold text-ink-900">${c.name}</p>
-                <p class="text-sm text-ink-500">${c.age} &middot; Escola Pequeno Pr&iacute;ncipe</p>
-                <div class="flex gap-1.5 mt-2">${badge("Pilar Escola compartilhado", "success")} ${badge("PEI ativo", "info")}</div>
+                <p class="text-lg font-bold text-ink-900 truncate">${c.name}</p>
+                <p class="text-xs text-ink-400">${c.age} &middot; Informa&ccedil;&otilde;es compartilhadas pela cl&iacute;nica</p>
               </div>
+              <button class="shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold ${peiEnabled ? "bg-accent-purple text-white" : "bg-white/80 text-ink-300 cursor-not-allowed"}">Ver PEI</button>
             </div>
 
+            ${
+              d.alerts && d.alerts.length > 0
+                ? `<div class="bg-red-50 border border-red-200 rounded-[16px] px-4 py-3">
+                <div class="flex items-center gap-2 mb-2">
+                  <div class="w-7 h-7 rounded-full bg-red-100 flex items-center justify-center shrink-0">${SCHOOL_ICONS.alert}</div>
+                  <p class="text-sm font-semibold text-red-700">Alertas recentes</p>
+                </div>
+                <div class="flex flex-col gap-2">
+                  ${d.alerts
+                    .map(
+                      (a) => `<div class="text-sm text-red-800 leading-relaxed">
+                    <span class="text-xs text-red-500 block mb-0.5">${a.date}</span>
+                    ${a.text}
+                  </div>`
+                    )
+                    .join("")}
+                </div>
+              </div>`
+                : ""
+            }
+
+            <!-- Grid: 4 se&ccedil;&otilde;es de info compartilhada -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-2">
-              <div class="bg-white/60 rounded-[16px] px-3 pt-3 pb-3 flex flex-col gap-2">
-                <p class="text-[14px] font-semibold text-ink-900 px-1" style="font-family:'Work Sans',sans-serif">Adapta&ccedil;&otilde;es em sala</p>
-                <div class="bg-white/60 rounded-[12px] p-3 flex flex-col gap-2">
-                  ${[
-                    "Posicionar pr&oacute;ximo da professora para apoio visual",
-                    "Avisar com 5 min sobre transi&ccedil;&otilde;es de atividade",
-                    "Permitir uso de fone abafador em momentos sensoriais",
-                    "Material com letras maiores e contraste alto",
-                  ]
-                    .map(
-                      (a) => `
-                    <div class="flex items-start gap-2">
-                      <div class="w-5 h-5 rounded-full bg-emerald-500/15 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5">
-                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5L4 7L8 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                      </div>
-                      <p class="text-sm text-ink-800">${a}</p>
-                    </div>`
-                    )
-                    .join("")}
-                </div>
-              </div>
-
-              <div class="bg-white/60 rounded-[16px] px-3 pt-3 pb-3 flex flex-col gap-2">
-                <p class="text-[14px] font-semibold text-ink-900 px-1" style="font-family:'Work Sans',sans-serif">Metas do PEI atuais</p>
-                <div class="bg-white/60 rounded-[12px] p-3 flex flex-col gap-3">
-                  ${[
-                    { goal: "Aumentar tempo de aten&ccedil;&atilde;o em atividade dirigida", progress: 70 },
-                    { goal: "Usar frases de 3+ palavras em pedidos espont&acirc;neos", progress: 55 },
-                    { goal: "Aceitar 2 texturas novas no almo&ccedil;o", progress: 40 },
-                  ]
-                    .map(
-                      (m) => `
-                    <div>
-                      <div class="flex items-center justify-between gap-2 mb-1">
-                        <p class="text-xs font-medium text-ink-700 flex-1">${m.goal}</p>
-                        <span class="text-xs font-bold text-ink-900 tabular-nums">${m.progress}%</span>
-                      </div>
-                      <div class="h-1.5 rounded-full bg-ink-100 overflow-hidden">
-                        <div class="h-full rounded-full bg-accent-purple" style="width:${m.progress}%"></div>
-                      </div>
-                    </div>`
-                    )
-                    .join("")}
-                </div>
-              </div>
+              ${schoolSection("Diagn&oacute;stico e suporte", "diagnosis", briefField(d.brief && d.brief.diagnosis), "bg-accent-purple/10")}
+              ${schoolSection("Gatilhos e estrat&eacute;gias", "triggers", briefField(d.brief && d.brief.triggers), "bg-orange-100")}
+              ${schoolSection("Metas terap&ecirc;uticas ativas", "goals", briefField(d.brief && d.brief.goals), "bg-green-100")}
+              ${schoolSection("Adapta&ccedil;&otilde;es para sala de aula", "adaptations", briefField(d.brief && d.brief.adaptations), "bg-accent-purple/10")}
             </div>
+
+            ${
+              d.weeklyTip
+                ? `<div class="bg-amber-50 border border-amber-200 rounded-[16px] px-4 py-3">
+                <div class="flex items-center gap-2 mb-2">
+                  <div class="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center shrink-0">${SCHOOL_ICONS.tip}</div>
+                  <p class="text-sm font-semibold text-amber-800">Sugest&atilde;o da semana</p>
+                </div>
+                <p class="text-sm text-amber-900 leading-relaxed">${d.weeklyTip.text}</p>
+                <p class="text-xs text-amber-500 mt-2">${d.weeklyTip.date}</p>
+              </div>`
+                : ""
+            }
+
+            ${schoolSection(
+              "Resumos mensais da cl&iacute;nica",
+              "monthly",
+              d.monthlySummaries && d.monthlySummaries.length > 0
+                ? `<div class="flex flex-col gap-2">${d.monthlySummaries
+                    .map(
+                      (s) =>
+                        `<div class="bg-white/50 rounded-xl p-3 border border-ink-100">
+                      <p class="text-xs text-ink-400 mb-1">${s.date}</p>
+                      <p class="text-sm text-ink-700 leading-relaxed">${s.text}</p>
+                    </div>`
+                    )
+                    .join("")}</div>`
+                : `<p class="text-xs text-ink-400 text-center py-3">Nenhum resumo mensal ainda.</p>`
+            )}
+
+            ${schoolSection(
+              "Observa&ccedil;&otilde;es da escola",
+              "observation",
+              `<div class="flex items-center justify-between mb-3">
+                <p class="text-xs text-ink-400">${d.isPending ? "Dispon&iacute;vel ap&oacute;s a fam&iacute;lia aprovar a conex&atilde;o." : "Seus registros do dia a dia ajudam os terapeutas."}</p>
+                ${!d.isPending ? `<button class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-accent-purple text-white">+ Registrar</button>` : ""}
+              </div>
+              ${
+                d.observations && d.observations.length > 0
+                  ? `<div class="flex flex-col gap-2">${d.observations
+                      .map(
+                        (item) => `<div class="bg-white/50 rounded-xl p-3 border border-ink-100">
+                    <div class="flex items-center justify-between mb-2">
+                      <p class="text-xs font-semibold text-ink-600 capitalize">${item.month}</p>
+                      ${schoolStarRating(item.attendance)}
+                    </div>
+                    <div class="mb-1.5">
+                      <p class="text-xs text-ink-400 font-medium">Comportamento</p>
+                      <p class="text-sm text-ink-700">${item.behavior}</p>
+                    </div>
+                    <div class="mb-1.5">
+                      <p class="text-xs text-ink-400 font-medium">Desafios</p>
+                      <p class="text-sm text-ink-700">${item.challenges}</p>
+                    </div>
+                    <div class="mb-1.5">
+                      <p class="text-xs text-ink-400 font-medium">Avan&ccedil;os</p>
+                      <p class="text-sm text-ink-700">${item.wins}</p>
+                    </div>
+                    <div class="flex flex-wrap gap-1 mt-2">
+                      ${item.tags.map((tag) => badge(tag, "info")).join("")}
+                    </div>
+                  </div>`
+                      )
+                      .join("")}</div>`
+                  : `<p class="text-xs text-ink-400 text-center py-3">Nenhuma observa&ccedil;&atilde;o registrada.</p>`
+              }`
+            )}
           </div>
         `;
       }
@@ -2010,16 +2430,16 @@
 
         // Render Chart.js charts if present
         if (fullHref === "parent/home") {
-          renderEvolutionChart("parent-evolution-chart-mini", 160);
+          renderHomeEvolutionMini("parent-evolution-chart-mini");
         } else if (fullHref === "parent/evolution") {
-          renderEvolutionChart("parent-evolution-chart-full", 280);
+          setupParentEvolutionPage();
         }
 
         // Scroll main to top
         content.scrollTop = 0;
       }
 
-      function renderEvolutionChart(canvasId, _height) {
+      function renderHomeEvolutionMini(canvasId) {
         const ctx = document.getElementById(canvasId);
         if (!ctx) return;
         const labels = PARENT_EVOLUTION.map((p) => p.date);
