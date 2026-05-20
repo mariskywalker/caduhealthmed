@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
   Este ficheiro é o protótipo do painel (dashboard) isolado.
-  Para a página completa — hero com Lottie CADU + narrativa + este mockup em iframe —
+  Para a página completa, hero com Lottie CADU + narrativa + este mockup em iframe , 
   abra index.html na mesma pasta.
 -->
 <html lang="pt-BR">
@@ -65,14 +65,14 @@
         background-position: center, center;
         background-repeat: no-repeat, no-repeat;
       }
-      /* Sidebar / shell — vidro leve sobre o mesmo fundo */
+      /* Sidebar / shell, vidro leve sobre o mesmo fundo */
       .mockup-shell-glass {
         -webkit-backdrop-filter: blur(28px) saturate(1.55);
         backdrop-filter: blur(28px) saturate(1.55);
         background: rgba(255, 255, 255, 0.42) !important;
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
       }
-      /* Liquid glass — todos os cards no main (sobre branco 50% + textura) */
+      /* Liquid glass, todos os cards no main (sobre branco 50% + textura) */
       main .bg-white.rounded-2xl,
       main .bg-white.rounded-xl,
       main a.bg-white.rounded-2xl {
@@ -281,7 +281,7 @@
 
     <script>
       /* =====================================================
-         DADOS SINTÉTICOS — todos inline, sem rede, sem banco.
+         DADOS SINTÉTICOS, todos inline, sem rede, sem banco.
          ===================================================== */
 
       function seedRand(seed) {
@@ -364,13 +364,13 @@
       const alertas = [
         { id:"al-001", categoria:"FRAUDE", severidade:"CRITICA", status:"NOVO", titulo:"GPS inconsistente em 12 das últimas 20 sessões", descricao:"Espaço Crescer Terapias: 60% das sessões faturadas no último mês não tiveram check-in GPS válido. Distância média do endereço da clínica: 2.4 km.", crianca_id:null, crianca_nome:null, clinica_id:"cl-006", clinica_nome:"Espaço Crescer Terapias", criado_em:dateNDaysAgo(2), valor_envolvido:12420 },
         { id:"al-002", categoria:"EVOLUCAO", severidade:"ALTA", status:"NOVO", titulo:"Criança estagnada há 4 meses sem revisão de plano", descricao:"Ana Beatriz Souza (8 anos, TEA Nível 2): score de evolução caiu de 68 para 42 em 4 meses; 20 sessões/mês mantidas sem revisão do plano terapêutico.", crianca_id:"child-001", crianca_nome:"Ana Beatriz Souza", clinica_id:"cl-004", clinica_nome:"Instituto Equilíbrio TEA", criado_em:dateNDaysAgo(1), valor_envolvido:3600 },
-        { id:"al-003", categoria:"FATURAMENTO", severidade:"ALTA", status:"EM_ANALISE", titulo:"Padrão de faturamento suspeito — sempre 20 sessões/mês", descricao:"Instituto Equilíbrio TEA: 7 crianças têm exatamente 20 sessões/mês há 6 meses consecutivos. Probabilidade estatística < 2%.", crianca_id:null, crianca_nome:null, clinica_id:"cl-004", clinica_nome:"Instituto Equilíbrio TEA", criado_em:dateNDaysAgo(5), valor_envolvido:25200 },
-        { id:"al-004", categoria:"ADERENCIA", severidade:"MEDIA", status:"NOVO", titulo:"5 faltas consecutivas — risco de abandono", descricao:"Lucas Henrique Costa (5 anos): 5 sessões consecutivas sem comparecimento; última sessão registrada há 21 dias.", crianca_id:"child-004", crianca_nome:"Lucas Henrique Costa", clinica_id:"cl-003", clinica_nome:"Clínica Saúde Plena", criado_em:dateNDaysAgo(3), valor_envolvido:null },
+        { id:"al-003", categoria:"FATURAMENTO", severidade:"ALTA", status:"EM_ANALISE", titulo:"Padrão de faturamento suspeito, sempre 20 sessões/mês", descricao:"Instituto Equilíbrio TEA: 7 crianças têm exatamente 20 sessões/mês há 6 meses consecutivos. Probabilidade estatística < 2%.", crianca_id:null, crianca_nome:null, clinica_id:"cl-004", clinica_nome:"Instituto Equilíbrio TEA", criado_em:dateNDaysAgo(5), valor_envolvido:25200 },
+        { id:"al-004", categoria:"ADERENCIA", severidade:"MEDIA", status:"NOVO", titulo:"5 faltas consecutivas, risco de abandono", descricao:"Lucas Henrique Costa (5 anos): 5 sessões consecutivas sem comparecimento; última sessão registrada há 21 dias.", crianca_id:"child-004", crianca_nome:"Lucas Henrique Costa", clinica_id:"cl-003", clinica_nome:"Clínica Saúde Plena", criado_em:dateNDaysAgo(3), valor_envolvido:null },
         { id:"al-005", categoria:"FATURAMENTO", severidade:"MEDIA", status:"NOVO", titulo:"Custo 58% acima da média da carteira", descricao:"Maria Clara Lima: custo mensal de R$ 5.940 contra média da carteira de R$ 3.760. Volume de sessões consistente, mas sem progresso proporcional na evolução.", crianca_id:"child-003", crianca_nome:"Maria Clara Lima", clinica_id:"cl-004", clinica_nome:"Instituto Equilíbrio TEA", criado_em:dateNDaysAgo(6), valor_envolvido:2180 },
         { id:"al-006", categoria:"FRAUDE", severidade:"ALTA", status:"NOVO", titulo:"Taxa de não-comparecimento próxima de zero", descricao:"Espaço Crescer Terapias: taxa de no-show é de 0.8% nos últimos 3 meses (média da rede: 11%). Padrão estatisticamente improvável.", crianca_id:null, crianca_nome:null, clinica_id:"cl-006", clinica_nome:"Espaço Crescer Terapias", criado_em:dateNDaysAgo(8), valor_envolvido:null },
         { id:"al-007", categoria:"EVOLUCAO", severidade:"ALTA", status:"NOVO", titulo:"Regressão clínica registrada", descricao:"Sofia Almeida: score de evolução caiu 23 pontos no último trimestre. Equipe da clínica reportou aumento de comportamentos de fuga.", crianca_id:"child-005", crianca_nome:"Sofia Almeida", clinica_id:"cl-004", clinica_nome:"Instituto Equilíbrio TEA", criado_em:dateNDaysAgo(4), valor_envolvido:null },
         { id:"al-008", categoria:"ADERENCIA", severidade:"BAIXA", status:"RESOLVIDO", titulo:"Gap de 3 semanas no tratamento", descricao:"Pedro Henrique Martins: 3 semanas sem sessão no mês passado. Família contactada; sessões retomaram.", crianca_id:"child-006", crianca_nome:"Pedro Henrique Martins", clinica_id:"cl-002", clinica_nome:"Espaço Conectar Neurodesenvolvimento", criado_em:dateNDaysAgo(14), valor_envolvido:null },
-        { id:"al-009", categoria:"FATURAMENTO", severidade:"CRITICA", status:"EM_ANALISE", titulo:"Sessão fantasma confirmada — sem GPS, sem evolução, sem relatório", descricao:"Espaço Crescer Terapias: 3 sessões faturadas em 12/05 sem check-in GPS, sem relatório de evolução e sem assinatura digital da família. Investigação ativa.", crianca_id:null, crianca_nome:null, clinica_id:"cl-006", clinica_nome:"Espaço Crescer Terapias", criado_em:dateNDaysAgo(7), valor_envolvido:540 },
+        { id:"al-009", categoria:"FATURAMENTO", severidade:"CRITICA", status:"EM_ANALISE", titulo:"Sessão fantasma confirmada, sem GPS, sem evolução, sem relatório", descricao:"Espaço Crescer Terapias: 3 sessões faturadas em 12/05 sem check-in GPS, sem relatório de evolução e sem assinatura digital da família. Investigação ativa.", crianca_id:null, crianca_nome:null, clinica_id:"cl-006", clinica_nome:"Espaço Crescer Terapias", criado_em:dateNDaysAgo(7), valor_envolvido:540 },
         { id:"al-010", categoria:"EVOLUCAO", severidade:"MEDIA", status:"NOVO", titulo:"Estagnação superior à média da carteira", descricao:"Davi Carvalho: sem evolução mensurável nos últimos 90 dias. Recomendação: revisão do plano com supervisão clínica.", crianca_id:"child-010", crianca_nome:"Davi Carvalho", clinica_id:"cl-005", clinica_nome:"Clínica Caminhos do Desenvolvimento", criado_em:dateNDaysAgo(2), valor_envolvido:null },
         { id:"al-011", categoria:"FRAUDE", severidade:"BAIXA", status:"IGNORADO", titulo:"Check-in GPS fora do raio em 1 sessão", descricao:"Centro Florescer Pediátrico: 1 sessão com check-in 180m fora do raio. Operadora avaliou: tolerância aceitável (sessão domiciliar).", crianca_id:"child-007", crianca_nome:"Manuela Ferreira", clinica_id:"cl-001", clinica_nome:"Centro Florescer Pediátrico", criado_em:dateNDaysAgo(10), valor_envolvido:null },
         { id:"al-012", categoria:"ADERENCIA", severidade:"ALTA", status:"NOVO", titulo:"Taxa de comparecimento abaixo de 60% há 2 meses", descricao:"Gabriel Santos: taxa de 54% nos últimos 60 dias. Intervenção proativa sugerida com família.", crianca_id:"child-008", crianca_nome:"Gabriel Santos", clinica_id:"cl-003", clinica_nome:"Clínica Saúde Plena", criado_em:dateNDaysAgo(1), valor_envolvido:null }
