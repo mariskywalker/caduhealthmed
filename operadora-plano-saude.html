@@ -1,0 +1,1653 @@
+<!DOCTYPE html>
+<!--
+  Este ficheiro é o protótipo do painel (dashboard) isolado.
+  Para a página completa — hero com Lottie CADU + narrativa + este mockup em iframe —
+  abra index.html na mesma pasta.
+-->
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CADU · Operadora de Plano de Saúde · Protótipo</title>
+    <meta name="robots" content="noindex,nofollow" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              accent: { purple: "#F74E45" },
+              ink: {
+                900: "#161616",
+                800: "#333333",
+                500: "#6B6B6B",
+                400: "#767676",
+                200: "#E5E5E5",
+                100: "#EDEDED",
+                50: "#FAFAFA",
+              },
+              surface: { bg: "#DFDDDA" },
+            },
+            boxShadow: {
+              glass: "0 2px 16px rgba(0,0,0,0.04)",
+              "glass-md": "0 4px 24px rgba(0,0,0,0.06)",
+            },
+          },
+        },
+      };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+      /* Fallback + fundo do mockup: PNG + camada branca 50% (substitui degradê/blobs) */
+      html {
+        min-height: 100%;
+        background: #fafaf8;
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+          sans-serif;
+        min-height: 100%;
+        margin: 0;
+        background: transparent;
+      }
+      /* Textura de fundo: bg.png na mesma pasta. Suba ?v= ao trocar a imagem. */
+      .mockup-page-bg {
+        pointer-events: none;
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background-color: #fafaf8;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)),
+          url("bg.png?v=8");
+        background-size: auto, cover;
+        background-position: center, center;
+        background-repeat: no-repeat, no-repeat;
+      }
+      /* Sidebar / shell — vidro leve sobre o mesmo fundo */
+      .mockup-shell-glass {
+        -webkit-backdrop-filter: blur(28px) saturate(1.55);
+        backdrop-filter: blur(28px) saturate(1.55);
+        background: rgba(255, 255, 255, 0.42) !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+      }
+      /* Liquid glass — todos os cards no main (sobre branco 50% + textura) */
+      main .bg-white.rounded-2xl,
+      main .bg-white.rounded-xl,
+      main a.bg-white.rounded-2xl {
+        position: relative;
+        isolation: isolate;
+        background:
+          linear-gradient(
+            118deg,
+            rgba(255, 255, 255, 0.52) 0%,
+            rgba(255, 255, 255, 0) 34%,
+            rgba(255, 255, 255, 0) 58%,
+            rgba(255, 255, 255, 0.16) 100%
+          ),
+          linear-gradient(
+            158deg,
+            rgba(255, 255, 255, 0.88) 0%,
+            rgba(255, 255, 255, 0.32) 40%,
+            rgba(248, 250, 252, 0.14) 100%
+          ),
+          rgba(255, 255, 255, 0.14) !important;
+        -webkit-backdrop-filter: blur(42px) saturate(1.8);
+        backdrop-filter: blur(42px) saturate(1.8);
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.82) inset,
+          0 -1px 0 rgba(15, 18, 28, 0.04) inset,
+          0 12px 46px rgba(15, 18, 28, 0.075),
+          0 2px 12px rgba(15, 18, 28, 0.045),
+          0 0 0 1px rgba(255, 255, 255, 0.4) inset !important;
+        transition:
+          background 0.32s ease,
+          box-shadow 0.32s ease,
+          transform 0.22s ease,
+          border-color 0.22s ease;
+      }
+      main a.bg-white.rounded-2xl:hover,
+      main .bg-white.rounded-2xl:hover {
+        background:
+          linear-gradient(
+            118deg,
+            rgba(255, 255, 255, 0.62) 0%,
+            rgba(255, 255, 255, 0) 32%,
+            rgba(255, 255, 255, 0) 60%,
+            rgba(255, 255, 255, 0.22) 100%
+          ),
+          linear-gradient(
+            158deg,
+            rgba(255, 255, 255, 0.96) 0%,
+            rgba(255, 255, 255, 0.42) 44%,
+            rgba(252, 252, 254, 0.22) 100%
+          ),
+          rgba(255, 255, 255, 0.24) !important;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.94) inset,
+          0 -1px 0 rgba(15, 18, 28, 0.05) inset,
+          0 18px 58px rgba(15, 18, 28, 0.1),
+          0 4px 16px rgba(15, 18, 28, 0.06),
+          0 0 0 1px rgba(255, 255, 255, 0.52) inset !important;
+      }
+      main button.bg-white.rounded-xl:hover {
+        background:
+          linear-gradient(
+            118deg,
+            rgba(255, 255, 255, 0.55) 0%,
+            rgba(255, 255, 255, 0) 38%,
+            rgba(255, 255, 255, 0.12) 100%
+          ),
+          linear-gradient(
+            158deg,
+            rgba(255, 255, 255, 0.94) 0%,
+            rgba(255, 255, 255, 0.44) 50%,
+            rgba(255, 255, 255, 0.22) 100%
+          ),
+          rgba(255, 255, 255, 0.28) !important;
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.88) inset,
+          0 12px 42px rgba(15, 18, 28, 0.085),
+          0 0 0 1px rgba(255, 255, 255, 0.48) inset !important;
+      }
+      .stat-card-ico svg {
+        display: block;
+        width: 15px;
+        height: 15px;
+        flex-shrink: 0;
+      }
+      .tabular-nums {
+        font-variant-numeric: tabular-nums;
+      }
+      [hidden] {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body class="text-ink-900">
+    <div class="mockup-page-bg" aria-hidden="true"></div>
+    <!-- Banner protótipo -->
+    <div
+      class="relative z-20 bg-amber-100 border-b border-amber-300 px-4 py-2 text-center text-xs text-amber-900 font-medium"
+    >
+      <span class="font-bold">Protótipo navegável · dados sintéticos.</span>
+      Demonstração comercial do módulo Operadora de Plano de Saúde do CADU. Nenhum dado real
+      é apresentado.
+    </div>
+
+    <div class="relative z-10 flex min-h-screen">
+      <!-- Sidebar -->
+      <aside
+        class="mockup-shell-glass hidden lg:flex fixed left-0 top-[37px] flex-col w-[260px] h-[calc(100vh-37px)] border-r border-white/30 z-30"
+      >
+        <div class="px-5 pt-6 pb-4">
+          <div class="flex items-center gap-3">
+            <div
+              class="w-11 h-11 rounded-xl bg-accent-purple flex items-center justify-center text-white font-bold text-lg shadow-glass"
+            >
+              PS
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="text-[15px] font-bold text-ink-900 leading-tight">Plano Saúde Demo</p>
+              <p class="text-xs text-ink-400 font-medium">Operadora · ANS 999999</p>
+            </div>
+          </div>
+          <div class="mt-3 px-2 py-2 rounded-lg bg-amber-50 border border-amber-200">
+            <p class="text-[11px] font-bold text-amber-800 uppercase tracking-wide">
+              Dados sintéticos
+            </p>
+            <p class="text-[11px] text-amber-700 mt-0.5 leading-snug">
+              Mockup do módulo. Sem conexão a dados reais.
+            </p>
+          </div>
+        </div>
+
+        <div class="h-px bg-ink-100 mx-4"></div>
+
+        <nav id="sidebar-nav" class="flex-1 px-3 py-3 space-y-0.5 overflow-y-auto">
+          <!-- gerado por JS -->
+        </nav>
+
+        <div class="border-t border-ink-100 px-3 py-3">
+          <div class="flex items-center gap-3 px-2">
+            <div
+              class="w-9 h-9 rounded-full bg-accent-purple/10 text-accent-purple font-bold flex items-center justify-center text-sm shrink-0"
+            >
+              MR
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold text-ink-900 truncate">Maria Rocha</p>
+              <p class="text-xs text-ink-400">Analista Antifraude</p>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Mobile top bar -->
+      <header
+        class="mockup-shell-glass lg:hidden sticky top-0 z-20 border-b border-white/25 px-4 py-3 flex items-center justify-between w-full"
+      >
+        <div class="flex items-center gap-2">
+          <div
+            class="w-9 h-9 rounded-lg bg-accent-purple flex items-center justify-center text-white font-bold text-sm"
+          >
+            PS
+          </div>
+          <div>
+            <p class="text-sm font-bold text-ink-900 leading-tight">Plano Saúde Demo</p>
+            <p class="text-[11px] text-amber-700 font-semibold">Protótipo · sintético</p>
+          </div>
+        </div>
+        <button
+          id="mobile-menu-btn"
+          class="lg:hidden p-2 rounded-lg hover:bg-ink-50"
+          aria-label="Menu"
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+      </header>
+
+      <!-- Mobile menu overlay -->
+      <div id="mobile-menu" class="lg:hidden fixed inset-0 z-40 hidden">
+        <div class="absolute inset-0 bg-black/40" id="mobile-menu-backdrop"></div>
+        <aside class="mockup-shell-glass absolute left-0 top-0 bottom-0 w-[280px] border-r border-white/30 p-4 overflow-y-auto">
+          <div class="flex items-center justify-between mb-4">
+            <p class="text-base font-bold">Plano Saúde Demo</p>
+            <button id="mobile-menu-close" class="p-1 rounded hover:bg-ink-100">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <nav id="mobile-nav" class="space-y-1"></nav>
+        </aside>
+      </div>
+
+      <!-- Main -->
+      <div class="lg:pl-[260px] w-full min-h-[calc(100vh-37px)] bg-transparent">
+        <main class="relative z-[1] px-4 lg:px-8 pt-6 pb-12 max-w-[1600px] mx-auto bg-transparent">
+          <section id="page-dashboard" class="space-y-6"></section>
+          <section id="page-criancas" hidden class="space-y-5"></section>
+          <section id="page-crianca-detail" hidden class="space-y-5"></section>
+          <section id="page-clinicas" hidden class="space-y-5"></section>
+          <section id="page-clinica-detail" hidden class="space-y-5"></section>
+          <section id="page-alertas" hidden class="space-y-5"></section>
+          <section id="page-relatorios" hidden class="space-y-5"></section>
+          <section id="page-configuracoes" hidden class="space-y-5"></section>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      /* =====================================================
+         DADOS SINTÉTICOS — todos inline, sem rede, sem banco.
+         ===================================================== */
+
+      function seedRand(seed) {
+        let s = seed;
+        return () => { s = (s * 9301 + 49297) % 233280; return s / 233280; };
+      }
+      const rand = seedRand(42);
+      const pick = (arr) => arr[Math.floor(rand() * arr.length)];
+      const intBetween = (min, max) => Math.floor(rand() * (max - min + 1)) + min;
+      const dateNDaysAgo = (n) => { const d = new Date(); d.setDate(d.getDate() - n); return d.toISOString().slice(0,10); };
+      const dateNDaysAhead = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0,10); };
+
+      const operadora = {
+        name: "Plano Saúde Demo",
+        legal_name: "Plano Saúde Demo Ltda.",
+        cnpj: "99.999.999/0001-99",
+        ans_code: "999999",
+        vidas_ativas: 487,
+        contratos_vigentes: 1,
+      };
+
+      const clinicas = [
+        { id:"cl-001", nome:"Centro Florescer Pediátrico", cnpj:"12.345.678/0001-01", cidade:"São Paulo", uf:"SP", data_credenciamento:"2025-03-15", criancas_atendidas:87, custo_medio_mensal:14820, score_geral:92, score_evolucao:94, score_aderencia:89, score_conformidade:93, taxa_checkin_gps:96, especialidades:["ABA","Fono","TO","Psicologia"], contato_email:"coord@florescer.com.br", contato_responsavel:"Dra. Helena Marques" },
+        { id:"cl-002", nome:"Espaço Conectar Neurodesenvolvimento", cnpj:"23.456.789/0001-02", cidade:"São Paulo", uf:"SP", data_credenciamento:"2025-04-02", criancas_atendidas:64, custo_medio_mensal:11340, score_geral:88, score_evolucao:87, score_aderencia:91, score_conformidade:86, taxa_checkin_gps:91, especialidades:["ABA","Fono","TO"], contato_email:"atendimento@conectar.com.br", contato_responsavel:"Dr. Pedro Yamamoto" },
+        { id:"cl-003", nome:"Clínica Saúde Plena", cnpj:"34.567.890/0001-03", cidade:"Campinas", uf:"SP", data_credenciamento:"2025-01-22", criancas_atendidas:52, custo_medio_mensal:9180, score_geral:81, score_evolucao:79, score_aderencia:85, score_conformidade:82, taxa_checkin_gps:85, especialidades:["Fono","TO","Psicologia"], contato_email:"contato@saudeplena.com.br", contato_responsavel:"Dra. Carla Pinheiro" },
+        { id:"cl-004", nome:"Instituto Equilíbrio TEA", cnpj:"45.678.901/0001-04", cidade:"Rio de Janeiro", uf:"RJ", data_credenciamento:"2024-11-10", criancas_atendidas:71, custo_medio_mensal:12950, score_geral:73, score_evolucao:71, score_aderencia:78, score_conformidade:70, taxa_checkin_gps:72, especialidades:["ABA","Fono"], contato_email:"equilibrio@institutoequilibrio.com.br", contato_responsavel:"Dr. Rafael Lopes" },
+        { id:"cl-005", nome:"Clínica Caminhos do Desenvolvimento", cnpj:"56.789.012/0001-05", cidade:"Belo Horizonte", uf:"MG", data_credenciamento:"2025-06-30", criancas_atendidas:43, custo_medio_mensal:7650, score_geral:67, score_evolucao:64, score_aderencia:71, score_conformidade:66, taxa_checkin_gps:68, especialidades:["TO","Psicologia"], contato_email:"caminhos@caminhosdes.com.br", contato_responsavel:"Dra. Beatriz Cardoso" },
+        { id:"cl-006", nome:"Espaço Crescer Terapias", cnpj:"67.890.123/0001-06", cidade:"São Paulo", uf:"SP", data_credenciamento:"2024-08-14", criancas_atendidas:38, custo_medio_mensal:8920, score_geral:54, score_evolucao:48, score_aderencia:62, score_conformidade:54, taxa_checkin_gps:51, especialidades:["ABA","Fono","TO"], contato_email:"contato@crescer.com.br", contato_responsavel:"Dr. Marcos Tavares" },
+      ];
+
+      const nomes = [
+        "Ana Beatriz Souza","João Pedro Oliveira","Maria Clara Lima","Lucas Henrique Costa","Sofia Almeida",
+        "Pedro Henrique Martins","Manuela Ferreira","Gabriel Santos","Isabela Ribeiro","Davi Carvalho",
+        "Helena Nascimento","Bernardo Castro","Laura Fernandes","Theo Cardoso","Alice Mendes",
+        "Heitor Barbosa","Júlia Moreira","Miguel Araújo","Valentina Rocha","Bento Pereira",
+        "Cecília Gomes","Henrique Dias","Lara Andrade","Antônio Vieira","Antonella Pinto"
+      ];
+      const diagnosticos = ["TEA Nível 1","TEA Nível 2","TEA Nível 3","TEA Nível 1 + TDAH","TEA Nível 2 + TDL"];
+      const statusEvolucaoPool = ["PROGREDINDO","PROGREDINDO","PROGREDINDO","PROGREDINDO","ESTAVEL","ESTAVEL","ESTAVEL","ESTAGNADA","ESTAGNADA","REGREDINDO"];
+      const aderenciaPool = ["ALTA","ALTA","ALTA","MEDIA","MEDIA","MEDIA","BAIXA","BAIXA","CRITICA"];
+
+      function iniciais(nome){ const p = nome.split(" "); return p[0][0]+p[p.length-1][0]; }
+
+      const criancas = nomes.map((nome, i) => {
+        const idade = intBetween(3, 11);
+        const nascimento = new Date(); nascimento.setFullYear(nascimento.getFullYear()-idade);
+        nascimento.setMonth(intBetween(0,11)); nascimento.setDate(intBetween(1,28));
+        const clinica = clinicas[intBetween(0, clinicas.length - 1)];
+        const sessoes_mes = intBetween(8, 24);
+        const taxa_comparecimento = intBetween(60, 100);
+        const valor_sessao = 180;
+        const custo_mes = sessoes_mes * valor_sessao;
+        const status_evolucao = pick(statusEvolucaoPool);
+        const aderencia = pick(aderenciaPool);
+        return {
+          id: "child-"+String(i+1).padStart(3,"0"),
+          full_name: nome,
+          iniciais: iniciais(nome),
+          data_nascimento: nascimento.toISOString().slice(0,10),
+          idade,
+          diagnostico: pick(diagnosticos),
+          nivel_suporte: intBetween(1,3),
+          clinica_id: clinica.id,
+          clinica_nome: clinica.nome,
+          status_evolucao,
+          ultima_sessao: dateNDaysAgo(intBetween(0,14)),
+          proxima_sessao: intBetween(0,10) > 1 ? dateNDaysAhead(intBetween(1,7)) : null,
+          sessoes_mes,
+          aderencia,
+          taxa_comparecimento,
+          custo_mes,
+          custo_acumulado_ano: custo_mes * intBetween(8,12),
+          numero_carteirinha: "PSD-2026-"+String(i+1).padStart(6,"0"),
+          opt_in_at: dateNDaysAgo(intBetween(30,180)),
+          evolucao_score: status_evolucao==="PROGREDINDO" ? intBetween(75,95) : status_evolucao==="ESTAVEL" ? intBetween(60,75) : status_evolucao==="ESTAGNADA" ? intBetween(40,60) : intBetween(20,40),
+          ultima_evolucao_data: dateNDaysAgo(intBetween(7,90)),
+        };
+      });
+
+      const alertas = [
+        { id:"al-001", categoria:"FRAUDE", severidade:"CRITICA", status:"NOVO", titulo:"GPS inconsistente em 12 das últimas 20 sessões", descricao:"Espaço Crescer Terapias: 60% das sessões faturadas no último mês não tiveram check-in GPS válido. Distância média do endereço da clínica: 2.4 km.", crianca_id:null, crianca_nome:null, clinica_id:"cl-006", clinica_nome:"Espaço Crescer Terapias", criado_em:dateNDaysAgo(2), valor_envolvido:12420 },
+        { id:"al-002", categoria:"EVOLUCAO", severidade:"ALTA", status:"NOVO", titulo:"Criança estagnada há 4 meses sem revisão de plano", descricao:"Ana Beatriz Souza (8 anos, TEA Nível 2): score de evolução caiu de 68 para 42 em 4 meses; 20 sessões/mês mantidas sem revisão do plano terapêutico.", crianca_id:"child-001", crianca_nome:"Ana Beatriz Souza", clinica_id:"cl-004", clinica_nome:"Instituto Equilíbrio TEA", criado_em:dateNDaysAgo(1), valor_envolvido:3600 },
+        { id:"al-003", categoria:"FATURAMENTO", severidade:"ALTA", status:"EM_ANALISE", titulo:"Padrão de faturamento suspeito — sempre 20 sessões/mês", descricao:"Instituto Equilíbrio TEA: 7 crianças têm exatamente 20 sessões/mês há 6 meses consecutivos. Probabilidade estatística < 2%.", crianca_id:null, crianca_nome:null, clinica_id:"cl-004", clinica_nome:"Instituto Equilíbrio TEA", criado_em:dateNDaysAgo(5), valor_envolvido:25200 },
+        { id:"al-004", categoria:"ADERENCIA", severidade:"MEDIA", status:"NOVO", titulo:"5 faltas consecutivas — risco de abandono", descricao:"Lucas Henrique Costa (5 anos): 5 sessões consecutivas sem comparecimento; última sessão registrada há 21 dias.", crianca_id:"child-004", crianca_nome:"Lucas Henrique Costa", clinica_id:"cl-003", clinica_nome:"Clínica Saúde Plena", criado_em:dateNDaysAgo(3), valor_envolvido:null },
+        { id:"al-005", categoria:"FATURAMENTO", severidade:"MEDIA", status:"NOVO", titulo:"Custo 58% acima da média da carteira", descricao:"Maria Clara Lima: custo mensal de R$ 5.940 contra média da carteira de R$ 3.760. Volume de sessões consistente, mas sem progresso proporcional na evolução.", crianca_id:"child-003", crianca_nome:"Maria Clara Lima", clinica_id:"cl-004", clinica_nome:"Instituto Equilíbrio TEA", criado_em:dateNDaysAgo(6), valor_envolvido:2180 },
+        { id:"al-006", categoria:"FRAUDE", severidade:"ALTA", status:"NOVO", titulo:"Taxa de não-comparecimento próxima de zero", descricao:"Espaço Crescer Terapias: taxa de no-show é de 0.8% nos últimos 3 meses (média da rede: 11%). Padrão estatisticamente improvável.", crianca_id:null, crianca_nome:null, clinica_id:"cl-006", clinica_nome:"Espaço Crescer Terapias", criado_em:dateNDaysAgo(8), valor_envolvido:null },
+        { id:"al-007", categoria:"EVOLUCAO", severidade:"ALTA", status:"NOVO", titulo:"Regressão clínica registrada", descricao:"Sofia Almeida: score de evolução caiu 23 pontos no último trimestre. Equipe da clínica reportou aumento de comportamentos de fuga.", crianca_id:"child-005", crianca_nome:"Sofia Almeida", clinica_id:"cl-004", clinica_nome:"Instituto Equilíbrio TEA", criado_em:dateNDaysAgo(4), valor_envolvido:null },
+        { id:"al-008", categoria:"ADERENCIA", severidade:"BAIXA", status:"RESOLVIDO", titulo:"Gap de 3 semanas no tratamento", descricao:"Pedro Henrique Martins: 3 semanas sem sessão no mês passado. Família contactada; sessões retomaram.", crianca_id:"child-006", crianca_nome:"Pedro Henrique Martins", clinica_id:"cl-002", clinica_nome:"Espaço Conectar Neurodesenvolvimento", criado_em:dateNDaysAgo(14), valor_envolvido:null },
+        { id:"al-009", categoria:"FATURAMENTO", severidade:"CRITICA", status:"EM_ANALISE", titulo:"Sessão fantasma confirmada — sem GPS, sem evolução, sem relatório", descricao:"Espaço Crescer Terapias: 3 sessões faturadas em 12/05 sem check-in GPS, sem relatório de evolução e sem assinatura digital da família. Investigação ativa.", crianca_id:null, crianca_nome:null, clinica_id:"cl-006", clinica_nome:"Espaço Crescer Terapias", criado_em:dateNDaysAgo(7), valor_envolvido:540 },
+        { id:"al-010", categoria:"EVOLUCAO", severidade:"MEDIA", status:"NOVO", titulo:"Estagnação superior à média da carteira", descricao:"Davi Carvalho: sem evolução mensurável nos últimos 90 dias. Recomendação: revisão do plano com supervisão clínica.", crianca_id:"child-010", crianca_nome:"Davi Carvalho", clinica_id:"cl-005", clinica_nome:"Clínica Caminhos do Desenvolvimento", criado_em:dateNDaysAgo(2), valor_envolvido:null },
+        { id:"al-011", categoria:"FRAUDE", severidade:"BAIXA", status:"IGNORADO", titulo:"Check-in GPS fora do raio em 1 sessão", descricao:"Centro Florescer Pediátrico: 1 sessão com check-in 180m fora do raio. Operadora avaliou: tolerância aceitável (sessão domiciliar).", crianca_id:"child-007", crianca_nome:"Manuela Ferreira", clinica_id:"cl-001", clinica_nome:"Centro Florescer Pediátrico", criado_em:dateNDaysAgo(10), valor_envolvido:null },
+        { id:"al-012", categoria:"ADERENCIA", severidade:"ALTA", status:"NOVO", titulo:"Taxa de comparecimento abaixo de 60% há 2 meses", descricao:"Gabriel Santos: taxa de 54% nos últimos 60 dias. Intervenção proativa sugerida com família.", crianca_id:"child-008", crianca_nome:"Gabriel Santos", clinica_id:"cl-003", clinica_nome:"Clínica Saúde Plena", criado_em:dateNDaysAgo(1), valor_envolvido:null }
+      ];
+
+      const serieTemporal = (() => {
+        const meses = ["Jun/25","Jul/25","Ago/25","Set/25","Out/25","Nov/25","Dez/25","Jan/26","Fev/26","Mar/26","Abr/26","Mai/26"];
+        return meses.map((mes, i) => ({
+          mes,
+          custo: 280000 + i*8500 + intBetween(-5000, 8000),
+          sessoes: 1800 + i*30 + intBetween(-50, 50),
+          criancas_ativas: 380 + i*10 + intBetween(-5, 8),
+          conformidade_gps: 78 + Math.min(15, i) + intBetween(-3, 3),
+          alertas_mes: 11 + Math.round(i * 1.6) + intBetween(-2, 6),
+        }));
+      })();
+
+      /* =====================================================
+         FORMATTERS + LOOKUPS
+         ===================================================== */
+
+      function formatCurrency(v) {
+        return new Intl.NumberFormat("pt-BR", { style:"currency", currency:"BRL", maximumFractionDigits:0 }).format(v);
+      }
+      function formatDateBR(iso) {
+        return new Date(iso).toLocaleDateString("pt-BR", { day:"2-digit", month:"short" });
+      }
+      function formatDateTimeBR(iso) {
+        return new Date(iso).toLocaleString("pt-BR", { day:"2-digit", month:"short", hour:"2-digit", minute:"2-digit" });
+      }
+
+      const getCustoTotalMes = () => criancas.reduce((s,c) => s + c.custo_mes, 0);
+      const getCriancasProgredindo = () => criancas.filter(c => c.status_evolucao==="PROGREDINDO").length;
+      const getCriancasEstagnadas = () => criancas.filter(c => c.status_evolucao==="ESTAGNADA" || c.status_evolucao==="REGREDINDO").length;
+      const getConformidadeGPS = () => serieTemporal[serieTemporal.length-1].conformidade_gps;
+      const getAlertasPendentes = () => alertas.filter(a => a.status==="NOVO" || a.status==="EM_ANALISE").length;
+      const getTopClinicas = (n=5) => [...clinicas].sort((a,b) => b.score_geral - a.score_geral).slice(0,n);
+      const getBottomClinicas = (n=5) => [...clinicas].sort((a,b) => a.score_geral - b.score_geral).slice(0,n);
+      const getCriancaById = (id) => criancas.find(c => c.id === id);
+      const getClinicaById = (id) => clinicas.find(c => c.id === id);
+      const getCriancasByClinica = (id) => criancas.filter(c => c.clinica_id === id);
+      const getAlertasByClinica = (id) => alertas.filter(a => a.clinica_id === id);
+      const getAlertasByCrianca = (id) => alertas.filter(a => a.crianca_id === id);
+
+      function severityColor(s) {
+        return {
+          CRITICA: { bg:"bg-red-50", text:"text-red-700", border:"border-red-200", dot:"bg-red-500" },
+          ALTA:    { bg:"bg-orange-50", text:"text-orange-700", border:"border-orange-200", dot:"bg-orange-500" },
+          MEDIA:   { bg:"bg-amber-50", text:"text-amber-700", border:"border-amber-200", dot:"bg-amber-500" },
+          BAIXA:   { bg:"bg-blue-50", text:"text-blue-700", border:"border-blue-200", dot:"bg-blue-500" }
+        }[s];
+      }
+      function evolutionColor(s) {
+        return {
+          PROGREDINDO: { bg:"bg-green-50", text:"text-green-700", border:"border-green-200", label:"Progredindo" },
+          ESTAVEL:     { bg:"bg-blue-50", text:"text-blue-700", border:"border-blue-200", label:"Estável" },
+          ESTAGNADA:   { bg:"bg-amber-50", text:"text-amber-700", border:"border-amber-200", label:"Estagnada" },
+          REGREDINDO:  { bg:"bg-red-50", text:"text-red-700", border:"border-red-200", label:"Regredindo" }
+        }[s];
+      }
+      function adherenceColor(a) {
+        return {
+          ALTA:    { bg:"bg-green-50", text:"text-green-700", label:"Alta" },
+          MEDIA:   { bg:"bg-blue-50", text:"text-blue-700", label:"Média" },
+          BAIXA:   { bg:"bg-amber-50", text:"text-amber-700", label:"Baixa" },
+          CRITICA: { bg:"bg-red-50", text:"text-red-700", label:"Crítica" }
+        }[a];
+      }
+      function categoriaLabel(c) {
+        return { FRAUDE:"Fraude", EVOLUCAO:"Evolução", ADERENCIA:"Aderência", FATURAMENTO:"Faturamento" }[c];
+      }
+      function statusLabel(s) {
+        return { NOVO:"Novo", EM_ANALISE:"Em análise", RESOLVIDO:"Resolvido", IGNORADO:"Ignorado" }[s];
+      }
+      function scoreBadgeColor(score) {
+        if (score >= 85) return "bg-green-50 text-green-700 border-green-200";
+        if (score >= 70) return "bg-blue-50 text-blue-700 border-blue-200";
+        if (score >= 55) return "bg-amber-50 text-amber-800 border-amber-200";
+        return "bg-red-50 text-red-700 border-red-200";
+      }
+      function scoreBarColor(score) {
+        if (score >= 85) return "bg-green-500";
+        if (score >= 70) return "bg-blue-500";
+        if (score >= 55) return "bg-amber-500";
+        return "bg-red-500";
+      }
+
+      /* =====================================================
+         COMPONENTES REUTILIZÁVEIS (template literals)
+         ===================================================== */
+
+      function statCard({ label, value, hint, trend, accent="purple", icon }) {
+        const accentBg = {
+          purple: "bg-accent-purple/10 text-accent-purple",
+          green: "bg-green-100 text-green-700",
+          amber: "bg-amber-100 text-amber-700",
+          red: "bg-red-100 text-red-700",
+          blue: "bg-blue-100 text-blue-700",
+        }[accent];
+        return `
+          <div class="bg-white rounded-2xl p-3.5 sm:p-4 border border-ink-100 shadow-glass min-w-0 overflow-hidden flex flex-col h-full">
+            <p class="text-[9px] sm:text-[10px] font-semibold text-ink-400 uppercase tracking-wide leading-snug line-clamp-2">${label}</p>
+            <div class="mt-1.5 flex items-start justify-between gap-2 min-h-0 flex-1">
+              <div class="min-w-0 flex-1 pr-1">
+                <p class="text-lg sm:text-xl font-bold text-ink-900 leading-snug tabular-nums break-words">${value}</p>
+                ${hint ? `<p class="mt-1 text-[10px] sm:text-xs text-ink-500 leading-snug line-clamp-2">${hint}</p>` : ""}
+              </div>
+              ${icon ? `<div class="stat-card-ico shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${accentBg}">${icon}</div>` : ""}
+            </div>
+            ${trend ? `
+              <div class="mt-2 flex flex-wrap items-center gap-1 text-[10px] sm:text-xs">
+                <span class="inline-flex items-center gap-1 font-semibold ${trend.positive ? "text-green-700" : "text-red-700"}">
+                  <svg class="shrink-0" width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
+                    ${trend.positive ? '<path d="M12 4l-8 10h6v6h4v-6h6z"/>' : '<path d="M12 20l8-10h-6V4h-4v6H4z"/>'}
+                  </svg>
+                  ${trend.value}
+                </span>
+                <span class="text-ink-400">vs mês anterior</span>
+              </div>
+            ` : ""}
+          </div>
+        `;
+      }
+
+      function scoreBadge(score, size="md") {
+        const sizing = {
+          sm: "text-xs px-2 py-0.5 min-w-[36px]",
+          md: "text-sm px-2.5 py-1 min-w-[44px]",
+          lg: "text-xl px-3 py-1.5 min-w-[60px]"
+        }[size];
+        return `<span class="inline-flex items-center justify-center font-bold rounded-lg border tabular-nums ${scoreBadgeColor(score)} ${sizing}">${score}</span>`;
+      }
+
+      function scoreBar({ label, score }) {
+        return `
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-ink-500 font-medium">${label}</span>
+              <span class="text-ink-900 font-bold tabular-nums">${score}</span>
+            </div>
+            <div class="h-2 bg-ink-100 rounded-full overflow-hidden">
+              <div class="h-full ${scoreBarColor(score)} rounded-full transition-all" style="width:${Math.min(100, score)}%"></div>
+            </div>
+          </div>
+        `;
+      }
+
+      function alertCardHTML(alerta, compact) {
+        const sev = severityColor(alerta.severidade);
+        const statusColor = {
+          NOVO: "bg-accent-purple/10 text-accent-purple",
+          EM_ANALISE: "bg-blue-50 text-blue-700",
+          RESOLVIDO: "bg-green-50 text-green-700",
+          IGNORADO: "bg-ink-100 text-ink-500"
+        }[alerta.status];
+        return `
+          <div class="bg-white rounded-xl border ${sev.border} p-4 ${compact ? "" : "shadow-glass"}">
+            <div class="flex items-start gap-3">
+              <div class="shrink-0 w-2 h-2 rounded-full mt-2 ${sev.dot}"></div>
+              <div class="min-w-0 flex-1">
+                <div class="flex flex-wrap items-center gap-2 mb-1">
+                  <span class="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded ${sev.bg} ${sev.text}">${alerta.severidade}</span>
+                  <span class="text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded bg-ink-100 text-ink-500">${categoriaLabel(alerta.categoria)}</span>
+                  <span class="text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded ${statusColor}">${statusLabel(alerta.status)}</span>
+                  <span class="text-[11px] text-ink-400 ml-auto">${formatDateTimeBR(alerta.criado_em)}</span>
+                </div>
+                <h3 class="text-sm font-bold text-ink-900 leading-tight">${alerta.titulo}</h3>
+                ${!compact ? `<p class="mt-1 text-xs text-ink-500 leading-relaxed">${alerta.descricao}</p>` : ""}
+                <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-ink-500">
+                  ${alerta.clinica_nome ? `<a href="#/clinicas/${alerta.clinica_id}" class="font-semibold text-accent-purple hover:underline">${alerta.clinica_nome}</a>` : ""}
+                  ${alerta.crianca_nome ? `<a href="#/criancas/${alerta.crianca_id}" class="font-semibold text-accent-purple hover:underline">${alerta.crianca_nome}</a>` : ""}
+                  ${alerta.valor_envolvido != null ? `<span class="text-ink-700 font-medium">Valor envolvido: R$ ${alerta.valor_envolvido.toLocaleString("pt-BR")}</span>` : ""}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      /* =====================================================
+         SIDEBAR + NAVEGAÇÃO
+         ===================================================== */
+
+      const navItems = [
+        { label:"Dashboard", href:"#/", iconSVG: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg>' },
+        { label:"Crianças", href:"#/criancas", iconSVG: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3"/><path d="M5 21c0-3.5 3.13-6 7-6s7 2.5 7 6"/></svg>' },
+        { label:"Clínicas", href:"#/clinicas", iconSVG: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V8l7-4 7 4v13M9 14h6M9 18h6M9 10h6"/></svg>' },
+        { label:"Alertas", href:"#/alertas", iconSVG: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>' },
+        { label:"Relatórios", href:"#/relatorios", iconSVG: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>' },
+        { label:"Configurações", href:"#/configuracoes", iconSVG: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>' },
+      ];
+
+      function renderNav(hash) {
+        const html = navItems.map(item => {
+          const active = (item.href === "#/" && (hash === "" || hash === "#/" || hash.startsWith("#/?"))) ||
+            (item.href !== "#/" && (hash === item.href || hash.startsWith(item.href + "/") || hash.startsWith(item.href + "?")));
+          return `
+            <a href="${item.href}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${active ? "bg-accent-purple text-white" : "text-ink-500 hover:bg-ink-50 hover:text-ink-900"}">
+              <span class="${active ? "text-white" : "text-ink-500"}">${item.iconSVG}</span>
+              ${item.label}
+            </a>
+          `;
+        }).join("");
+        document.getElementById("sidebar-nav").innerHTML = html;
+        document.getElementById("mobile-nav").innerHTML = html;
+      }
+
+      /* =====================================================
+         PÁGINAS
+         ===================================================== */
+
+      let evolutionChartInstance = null;
+      let dashboardChartGps = null;
+      let dashboardChartAlertas = null;
+
+      function renderDashboard() {
+        const root = document.getElementById("page-dashboard");
+        const top = getTopClinicas(5);
+        const bot = getBottomClinicas(5);
+        const recent = [...alertas]
+          .filter(a => a.status==="NOVO" || a.status==="EM_ANALISE")
+          .sort((a,b) => {
+            const sev = { CRITICA:4, ALTA:3, MEDIA:2, BAIXA:1 };
+            return sev[b.severidade] - sev[a.severidade];
+          })
+          .slice(0,5);
+
+        const iconUsers = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/><circle cx="9" cy="7" r="4"/></svg>';
+        const iconMoney = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>';
+        const iconPin = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>';
+        const iconTrend = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>';
+        const iconAlert = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+
+        root.innerHTML = `
+          <div class="bg-white rounded-2xl p-5 lg:p-6 border border-ink-100 shadow-glass space-y-6">
+            <header class="flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <h1 class="text-3xl font-bold text-ink-900">Visão geral da carteira</h1>
+                <p class="text-sm text-ink-500 mt-1">
+                  ${operadora.name} · ANS ${operadora.ans_code} ·
+                  <span class="font-semibold text-ink-700">${criancas.length} crianças cobertas</span> no plano demo
+                </p>
+              </div>
+              <div class="flex items-center gap-2 text-xs text-ink-500">
+                <span class="inline-block w-2 h-2 rounded-full bg-green-500"></span>
+                Atualizado há 3 min
+              </div>
+            </header>
+
+            <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 lg:gap-4 min-w-0">
+              ${statCard({ label:"Vidas ativas", value:String(operadora.vidas_ativas), hint:`${criancas.length} com cobertura ativa visível`, accent:"purple", icon:iconUsers })}
+              ${statCard({ label:"Custo do mês", value:formatCurrency(getCustoTotalMes()), trend:{value:"+4,8%", positive:false}, accent:"red", icon:iconMoney })}
+              ${statCard({ label:"Conformidade GPS", value:`${getConformidadeGPS()}%`, trend:{value:"+2,1pp", positive:true}, hint:"Check-ins válidos / faturados", accent:"green", icon:iconPin })}
+              ${statCard({ label:"Progredindo / Estagnadas", value:`${getCriancasProgredindo()} / ${getCriancasEstagnadas()}`, hint:`${Math.round((getCriancasProgredindo()/criancas.length)*100)}% em progresso`, accent:"blue", icon:iconTrend })}
+              ${statCard({ label:"Alertas pendentes", value:String(getAlertasPendentes()), hint:`${alertas.filter(a => a.severidade==="CRITICA").length} críticos`, accent:"amber", icon:iconAlert })}
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div class="lg:col-span-2 bg-white rounded-2xl p-5 border border-ink-100 shadow-glass">
+              <div class="flex items-baseline justify-between mb-2">
+                <div>
+                  <h2 class="text-lg font-bold text-ink-900">Evolução da carteira</h2>
+                  <p class="text-xs text-ink-500">Custo total e volume de sessões nos últimos 12 meses</p>
+                </div>
+              </div>
+              <div style="position:relative; height:280px;">
+                <canvas id="evolutionChart"></canvas>
+              </div>
+              <div class="flex flex-col gap-6 mt-6 pt-6 border-t border-ink-100">
+                <div class="rounded-2xl p-px bg-gradient-to-br from-emerald-400/35 via-teal-400/15 to-transparent shadow-sm">
+                  <div class="rounded-2xl bg-white/75 backdrop-blur-md px-4 pt-3 pb-2 border border-white/70">
+                    <div class="flex items-start justify-between gap-3 mb-1">
+                      <div class="min-w-0">
+                        <h3 class="text-sm font-bold text-ink-900 tracking-tight">Conformidade média GPS</h3>
+                        <p class="text-xs text-ink-500 leading-snug">Check-ins válidos sobre sessões faturadas (demo)</p>
+                      </div>
+                      <span class="shrink-0 text-xs font-bold tabular-nums text-emerald-900 bg-emerald-50 border border-emerald-200/90 rounded-full px-2.5 py-1">${serieTemporal[serieTemporal.length-1].conformidade_gps}%</span>
+                    </div>
+                    <div class="relative h-[240px]"><canvas id="dashChartGps"></canvas></div>
+                  </div>
+                </div>
+                <div class="rounded-2xl p-px bg-gradient-to-br from-amber-400/40 via-orange-400/18 to-transparent shadow-sm">
+                  <div class="rounded-2xl bg-white/75 backdrop-blur-md px-4 pt-3 pb-2 border border-white/70">
+                    <div class="flex items-start justify-between gap-3 mb-1">
+                      <div class="min-w-0">
+                        <h3 class="text-sm font-bold text-ink-900 tracking-tight">Alertas abertos por mês</h3>
+                        <p class="text-xs text-ink-500 leading-snug">Novos + em análise (série sintética)</p>
+                      </div>
+                      <span class="shrink-0 text-xs font-bold tabular-nums text-amber-950 bg-amber-50 border border-amber-200/90 rounded-full px-2.5 py-1">${serieTemporal[serieTemporal.length-1].alertas_mes} no mês</span>
+                    </div>
+                    <div class="relative h-[260px]"><canvas id="dashChartAlertas"></canvas></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-5 border border-ink-100 shadow-glass">
+              <div class="flex items-baseline justify-between mb-3">
+                <h2 class="text-lg font-bold text-ink-900">Alertas recentes</h2>
+                <a href="#/alertas" class="text-xs font-semibold text-accent-purple hover:underline">Ver todos →</a>
+              </div>
+              <div class="space-y-2">
+                ${recent.map(a => alertCardHTML(a, true)).join("")}
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div class="bg-white rounded-2xl p-5 border border-ink-100 shadow-glass">
+              <div class="flex items-baseline justify-between mb-3">
+                <div>
+                  <h2 class="text-lg font-bold text-ink-900">Top 5 clínicas</h2>
+                  <p class="text-xs text-ink-500">Maior score geral na rede credenciada</p>
+                </div>
+                <a href="#/clinicas" class="text-xs font-semibold text-accent-purple hover:underline">Ranking →</a>
+              </div>
+              <div class="space-y-2">
+                ${top.map((c, i) => `
+                  <a href="#/clinicas/${c.id}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-ink-50 transition-colors">
+                    <span class="w-7 h-7 rounded-full bg-green-50 border border-green-200 text-green-700 font-bold text-xs flex items-center justify-center shrink-0">${i+1}</span>
+                    <div class="min-w-0 flex-1">
+                      <p class="text-sm font-bold text-ink-900 truncate">${c.nome}</p>
+                      <p class="text-xs text-ink-500">${c.criancas_atendidas} crianças · ${c.cidade}/${c.uf}</p>
+                    </div>
+                    ${scoreBadge(c.score_geral)}
+                  </a>
+                `).join("")}
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-5 border border-ink-100 shadow-glass">
+              <div class="flex items-baseline justify-between mb-3">
+                <div>
+                  <h2 class="text-lg font-bold text-ink-900">Atenção necessária</h2>
+                  <p class="text-xs text-ink-500">Clínicas com menor performance</p>
+                </div>
+                <a href="#/clinicas" class="text-xs font-semibold text-accent-purple hover:underline">Ranking →</a>
+              </div>
+              <div class="space-y-2">
+                ${bot.map((c, i) => `
+                  <a href="#/clinicas/${c.id}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-ink-50 transition-colors">
+                    <span class="w-7 h-7 rounded-full bg-red-50 border border-red-200 text-red-700 font-bold text-xs flex items-center justify-center shrink-0">${i+1}</span>
+                    <div class="min-w-0 flex-1">
+                      <p class="text-sm font-bold text-ink-900 truncate">${c.nome}</p>
+                      <p class="text-xs text-ink-500">${c.criancas_atendidas} crianças · ${c.cidade}/${c.uf}</p>
+                    </div>
+                    ${scoreBadge(c.score_geral)}
+                  </a>
+                `).join("")}
+              </div>
+            </div>
+          </div>
+        `;
+
+        // Render chart
+        if (evolutionChartInstance) { evolutionChartInstance.destroy(); evolutionChartInstance = null; }
+        const ctx = document.getElementById("evolutionChart").getContext("2d");
+        const gradCusto = ctx.createLinearGradient(0,0,0,280);
+        gradCusto.addColorStop(0,"rgba(247,78,69,0.32)");
+        gradCusto.addColorStop(1,"rgba(247,78,69,0.02)");
+        const gradSess = ctx.createLinearGradient(0,0,0,280);
+        gradSess.addColorStop(0,"rgba(59,130,246,0.22)");
+        gradSess.addColorStop(1,"rgba(59,130,246,0.00)");
+        evolutionChartInstance = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: serieTemporal.map(p => p.mes),
+            datasets: [
+              {
+                label: "Custo (R$)",
+                data: serieTemporal.map(p => p.custo),
+                borderColor: "#F74E45",
+                backgroundColor: gradCusto,
+                borderWidth: 2.5,
+                fill: true,
+                tension: 0.35,
+                yAxisID: "y",
+                pointRadius: 0,
+                pointHoverRadius: 5,
+              },
+              {
+                label: "Sessões",
+                data: serieTemporal.map(p => p.sessoes),
+                borderColor: "#3B82F6",
+                backgroundColor: gradSess,
+                borderWidth: 2.5,
+                fill: true,
+                tension: 0.35,
+                yAxisID: "y1",
+                pointRadius: 0,
+                pointHoverRadius: 5,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: "index", intersect: false },
+            plugins: {
+              legend: { position: "bottom", labels: { boxWidth: 10, boxHeight: 10, font: { size: 12 }, color: "#6B6B6B" } },
+              tooltip: {
+                backgroundColor: "white",
+                titleColor: "#161616",
+                bodyColor: "#333",
+                borderColor: "#E5E5E5",
+                borderWidth: 1,
+                padding: 10,
+                callbacks: {
+                  label: (ctx) => {
+                    if (ctx.dataset.label.startsWith("Custo")) return ` Custo: R$ ${ctx.parsed.y.toLocaleString("pt-BR")}`;
+                    return ` Sessões: ${ctx.parsed.y.toLocaleString("pt-BR")}`;
+                  }
+                }
+              }
+            },
+            scales: {
+              x: { grid: { display: false }, ticks: { color: "#767676", font: { size: 11 } } },
+              y: { position: "left", grid: { color: "#EDEDED" }, ticks: { color: "#767676", font: { size: 11 }, callback: (v) => "R$ " + (v/1000).toFixed(0) + "k" } },
+              y1: { position: "right", grid: { display: false }, ticks: { color: "#767676", font: { size: 11 } } },
+            }
+          }
+        });
+
+        if (dashboardChartGps) { dashboardChartGps.destroy(); dashboardChartGps = null; }
+        if (dashboardChartAlertas) { dashboardChartAlertas.destroy(); dashboardChartAlertas = null; }
+
+        const dashFont = { family: "system-ui,-apple-system,'Segoe UI',Roboto,sans-serif" };
+        const hGps = 240;
+        const ctxGps = document.getElementById("dashChartGps").getContext("2d");
+        const gradGpsFill = ctxGps.createLinearGradient(0, hGps, 0, 0);
+        gradGpsFill.addColorStop(0, "rgba(16,185,129,0.05)");
+        gradGpsFill.addColorStop(0.4, "rgba(45,212,191,0.18)");
+        gradGpsFill.addColorStop(1, "rgba(6,182,212,0.32)");
+        const gpsVals = serieTemporal.map((p) => p.conformidade_gps);
+        const gpsMin = Math.max(65, Math.min(...gpsVals) - 6);
+        const gpsMax = Math.min(100, Math.max(...gpsVals) + 4);
+        dashboardChartGps = new Chart(ctxGps, {
+          type: "line",
+          data: {
+            labels: serieTemporal.map((p) => p.mes),
+            datasets: [
+              {
+                label: "Conformidade",
+                data: gpsVals,
+                borderColor: "#0d9488",
+                backgroundColor: gradGpsFill,
+                borderWidth: 2.75,
+                fill: true,
+                tension: 0.42,
+                pointRadius: 0,
+                pointHoverRadius: 7,
+                pointHoverBackgroundColor: "#fff",
+                pointHoverBorderColor: "#0f766e",
+                pointHoverBorderWidth: 2.5,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 1100, easing: "easeOutQuart" },
+            layout: { padding: { top: 6, right: 4, bottom: 2, left: 2 } },
+            interaction: { mode: "index", intersect: false },
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: "rgba(255,255,255,0.96)",
+                titleColor: "#161616",
+                bodyColor: "#333",
+                borderColor: "rgba(13,148,136,0.25)",
+                borderWidth: 1,
+                padding: 12,
+                cornerRadius: 12,
+                displayColors: true,
+                boxPadding: 6,
+                callbacks: {
+                  label: (c) => ` ${c.parsed.y}% conformidade`,
+                },
+              },
+            },
+            scales: {
+              x: {
+                border: { display: false },
+                grid: { display: false, drawTicks: false },
+                ticks: { color: "#6B6B6B", font: { ...dashFont, size: 10, weight: "500" }, maxRotation: 0 },
+              },
+              y: {
+                min: gpsMin,
+                max: gpsMax,
+                border: { display: false },
+                grid: { color: "rgba(15,23,42,0.06)", drawTicks: false },
+                ticks: {
+                  color: "#6B6B6B",
+                  font: { ...dashFont, size: 10, weight: "500" },
+                  callback: (v) => v + "%",
+                  padding: 8,
+                },
+              },
+            },
+          },
+        });
+
+        const hAl = 260;
+        const ctxAl = document.getElementById("dashChartAlertas").getContext("2d");
+        const nMeses = serieTemporal.length;
+        dashboardChartAlertas = new Chart(ctxAl, {
+          type: "bar",
+          data: {
+            labels: serieTemporal.map((p) => p.mes),
+            datasets: [
+              {
+                label: "Alertas",
+                data: serieTemporal.map((p) => p.alertas_mes),
+                borderWidth: 0,
+                borderRadius: { topLeft: 12, topRight: 12, bottomLeft: 4, bottomRight: 4 },
+                maxBarThickness: 22,
+                backgroundColor: (c) => {
+                  const chart = c.chart;
+                  const { ctx, chartArea } = chart;
+                  if (!chartArea) return "rgba(251,191,36,0.65)";
+                  const g = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                  const t = nMeses > 1 ? c.dataIndex / (nMeses - 1) : 0;
+                  g.addColorStop(0, `rgba(251, 113, 133, ${0.28 + t * 0.12})`);
+                  g.addColorStop(0.45, `rgba(251, 191, 36, ${0.5 + t * 0.25})`);
+                  g.addColorStop(1, `rgba(253, 224, 71, ${0.82 + t * 0.12})`);
+                  return g;
+                },
+                hoverBackgroundColor: "rgba(245,158,11,0.92)",
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            datasets: {
+              bar: {
+                categoryPercentage: 0.82,
+                barPercentage: 0.68,
+              },
+            },
+            animation: { duration: 1100, easing: "easeOutQuart" },
+            layout: { padding: { top: 10, right: 4, bottom: 2, left: 2 } },
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: "rgba(255,255,255,0.96)",
+                titleColor: "#161616",
+                bodyColor: "#333",
+                borderColor: "rgba(245,158,11,0.35)",
+                borderWidth: 1,
+                padding: 12,
+                cornerRadius: 12,
+                callbacks: {
+                  label: (c) => ` ${c.parsed.y} alertas`,
+                },
+              },
+            },
+            scales: {
+              x: {
+                border: { display: false },
+                grid: { display: false, drawTicks: false },
+                ticks: { color: "#6B6B6B", font: { ...dashFont, size: 10, weight: "500" }, maxRotation: 0 },
+              },
+              y: {
+                beginAtZero: true,
+                suggestedMax: Math.max(...serieTemporal.map((p) => p.alertas_mes)) + 4,
+                border: { display: false },
+                grid: { color: "rgba(15,23,42,0.06)", drawTicks: false },
+                ticks: { color: "#6B6B6B", font: { ...dashFont, size: 10, weight: "500" }, padding: 8 },
+              },
+            },
+          },
+        });
+      }
+
+      /* ---------- Crianças ---------- */
+
+      const criancasFilters = { query: "", evol: "ALL", adher: "ALL", clinica: "ALL" };
+
+      function renderCriancas() {
+        const root = document.getElementById("page-criancas");
+        root.innerHTML = `
+          <header class="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h1 class="text-3xl font-bold text-ink-900">Crianças cobertas</h1>
+              <p id="criancas-count" class="text-sm text-ink-500 mt-1"></p>
+            </div>
+          </header>
+
+          <div class="bg-white rounded-2xl p-4 border border-ink-100 shadow-glass">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+              <div class="md:col-span-2">
+                <label class="block text-xs font-semibold text-ink-500 mb-1.5">Buscar</label>
+                <div class="relative">
+                  <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                  <input id="f-query" type="text" placeholder="Nome ou carteirinha..." value="${criancasFilters.query}" class="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-ink-200 focus:border-accent-purple focus:outline-none" />
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-ink-500 mb-1.5">Evolução</label>
+                <select id="f-evol" class="w-full px-3 py-2 text-sm rounded-lg border border-ink-200 focus:border-accent-purple focus:outline-none bg-white">
+                  <option value="ALL">Todas</option><option value="PROGREDINDO">Progredindo</option><option value="ESTAVEL">Estável</option><option value="ESTAGNADA">Estagnada</option><option value="REGREDINDO">Regredindo</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-ink-500 mb-1.5">Aderência</label>
+                <select id="f-adher" class="w-full px-3 py-2 text-sm rounded-lg border border-ink-200 focus:border-accent-purple focus:outline-none bg-white">
+                  <option value="ALL">Todas</option><option value="ALTA">Alta</option><option value="MEDIA">Média</option><option value="BAIXA">Baixa</option><option value="CRITICA">Crítica</option>
+                </select>
+              </div>
+              <div class="md:col-span-2">
+                <label class="block text-xs font-semibold text-ink-500 mb-1.5">Clínica</label>
+                <select id="f-clinica" class="w-full px-3 py-2 text-sm rounded-lg border border-ink-200 focus:border-accent-purple focus:outline-none bg-white">
+                  <option value="ALL">Todas as clínicas</option>
+                  ${clinicas.map(cl => `<option value="${cl.id}">${cl.nome}</option>`).join("")}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-ink-100 shadow-glass overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead class="bg-ink-50 border-b border-ink-100">
+                  <tr>
+                    <th class="text-left px-4 py-3 font-semibold text-ink-500 text-xs uppercase tracking-wide">Criança</th>
+                    <th class="text-left px-4 py-3 font-semibold text-ink-500 text-xs uppercase tracking-wide">Diagnóstico</th>
+                    <th class="text-left px-4 py-3 font-semibold text-ink-500 text-xs uppercase tracking-wide hidden md:table-cell">Clínica</th>
+                    <th class="text-left px-4 py-3 font-semibold text-ink-500 text-xs uppercase tracking-wide">Evolução</th>
+                    <th class="text-left px-4 py-3 font-semibold text-ink-500 text-xs uppercase tracking-wide hidden lg:table-cell">Aderência</th>
+                    <th class="text-right px-4 py-3 font-semibold text-ink-500 text-xs uppercase tracking-wide hidden lg:table-cell">Última sessão</th>
+                    <th class="text-right px-4 py-3 font-semibold text-ink-500 text-xs uppercase tracking-wide">Custo / mês</th>
+                  </tr>
+                </thead>
+                <tbody id="criancas-tbody" class="divide-y divide-ink-100"></tbody>
+              </table>
+            </div>
+            <div id="criancas-empty" hidden class="py-12 text-center"><p class="text-sm text-ink-500">Nenhuma criança encontrada com esses filtros.</p></div>
+          </div>
+        `;
+
+        // restore values
+        document.getElementById("f-evol").value = criancasFilters.evol;
+        document.getElementById("f-adher").value = criancasFilters.adher;
+        document.getElementById("f-clinica").value = criancasFilters.clinica;
+
+        document.getElementById("f-query").addEventListener("input", (e) => { criancasFilters.query = e.target.value; renderCriancasBody(); });
+        document.getElementById("f-evol").addEventListener("change", (e) => { criancasFilters.evol = e.target.value; renderCriancasBody(); });
+        document.getElementById("f-adher").addEventListener("change", (e) => { criancasFilters.adher = e.target.value; renderCriancasBody(); });
+        document.getElementById("f-clinica").addEventListener("change", (e) => { criancasFilters.clinica = e.target.value; renderCriancasBody(); });
+
+        renderCriancasBody();
+      }
+
+      function renderCriancasBody() {
+        const filtered = criancas.filter(c => {
+          if (criancasFilters.query) {
+            const q = criancasFilters.query.toLowerCase();
+            if (!c.full_name.toLowerCase().includes(q) && !c.numero_carteirinha.toLowerCase().includes(q)) return false;
+          }
+          if (criancasFilters.evol !== "ALL" && c.status_evolucao !== criancasFilters.evol) return false;
+          if (criancasFilters.adher !== "ALL" && c.aderencia !== criancasFilters.adher) return false;
+          if (criancasFilters.clinica !== "ALL" && c.clinica_id !== criancasFilters.clinica) return false;
+          return true;
+        });
+        document.getElementById("criancas-count").textContent = `${filtered.length} de ${criancas.length} crianças com consentimento ativo`;
+        const tbody = document.getElementById("criancas-tbody");
+        const empty = document.getElementById("criancas-empty");
+        if (filtered.length === 0) { tbody.innerHTML = ""; empty.hidden = false; return; }
+        empty.hidden = true;
+        tbody.innerHTML = filtered.map(c => {
+          const ev = evolutionColor(c.status_evolucao);
+          const ad = adherenceColor(c.aderencia);
+          return `
+            <tr class="hover:bg-ink-50/60 transition-colors">
+              <td class="px-4 py-3">
+                <a href="#/criancas/${c.id}" class="flex items-center gap-3 group">
+                  <span class="w-9 h-9 rounded-full bg-accent-purple/10 text-accent-purple font-bold text-xs flex items-center justify-center shrink-0">${c.iniciais}</span>
+                  <div class="min-w-0">
+                    <p class="font-semibold text-ink-900 group-hover:text-accent-purple truncate">${c.full_name}</p>
+                    <p class="text-xs text-ink-400">${c.idade} anos · ${c.numero_carteirinha}</p>
+                  </div>
+                </a>
+              </td>
+              <td class="px-4 py-3">
+                <p class="text-ink-900 text-xs font-medium">${c.diagnostico}</p>
+                <p class="text-[11px] text-ink-400">Nível ${c.nivel_suporte} de suporte</p>
+              </td>
+              <td class="px-4 py-3 hidden md:table-cell">
+                <p class="text-ink-900 text-xs truncate max-w-[200px]">${c.clinica_nome}</p>
+              </td>
+              <td class="px-4 py-3">
+                <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-1 rounded-full border ${ev.bg} ${ev.text} ${ev.border}">
+                  <span class="w-1.5 h-1.5 rounded-full" style="background:currentColor"></span>${ev.label}
+                </span>
+              </td>
+              <td class="px-4 py-3 hidden lg:table-cell">
+                <span class="inline-flex text-[11px] font-semibold px-2 py-1 rounded-full ${ad.bg} ${ad.text}">${ad.label} · ${c.taxa_comparecimento}%</span>
+              </td>
+              <td class="px-4 py-3 text-right text-xs text-ink-500 hidden lg:table-cell">${formatDateBR(c.ultima_sessao)}</td>
+              <td class="px-4 py-3 text-right">
+                <p class="text-sm font-bold text-ink-900 tabular-nums">${formatCurrency(c.custo_mes)}</p>
+                <p class="text-[11px] text-ink-400 tabular-nums">${c.sessoes_mes} sessões</p>
+              </td>
+            </tr>
+          `;
+        }).join("");
+      }
+
+      /* ---------- Detalhe criança ---------- */
+
+      function renderCriancaDetail(id) {
+        const root = document.getElementById("page-crianca-detail");
+        const c = getCriancaById(id);
+        if (!c) {
+          root.innerHTML = `
+            <div class="bg-white rounded-2xl p-12 border border-ink-100 shadow-glass text-center">
+              <p class="text-sm text-ink-500">Criança não encontrada.</p>
+              <a href="#/criancas" class="inline-block mt-3 text-sm font-semibold text-accent-purple hover:underline">← Voltar para crianças</a>
+            </div>`;
+          return;
+        }
+        const ev = evolutionColor(c.status_evolucao);
+        const ad = adherenceColor(c.aderencia);
+        const ca = getAlertasByCrianca(c.id);
+        root.innerHTML = `
+          <a href="#/criancas" class="inline-flex items-center gap-1 text-sm text-ink-500 hover:text-ink-900">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Voltar para crianças
+          </a>
+
+          <div class="bg-white rounded-2xl border border-ink-100 shadow-glass p-6">
+            <div class="flex flex-wrap items-start gap-5">
+              <div class="w-20 h-20 rounded-2xl bg-accent-purple/10 text-accent-purple font-bold text-2xl flex items-center justify-center shrink-0">${c.iniciais}</div>
+              <div class="min-w-0 flex-1">
+                <h1 class="text-2xl font-bold text-ink-900">${c.full_name}</h1>
+                <p class="text-sm text-ink-500 mt-0.5">${c.idade} anos · Nascida em ${formatDateBR(c.data_nascimento)} · <span class="text-ink-900 font-semibold">${c.diagnostico}</span></p>
+                <p class="text-xs text-ink-400 mt-1">Carteirinha ${c.numero_carteirinha} · Consentimento ativo desde ${formatDateBR(c.opt_in_at)}</p>
+                <div class="flex flex-wrap items-center gap-2 mt-3">
+                  <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border ${ev.bg} ${ev.text} ${ev.border}">${ev.label}</span>
+                  <span class="inline-flex text-xs font-semibold px-2.5 py-1 rounded-full ${ad.bg} ${ad.text}">Aderência ${ad.label} · ${c.taxa_comparecimento}%</span>
+                  <span class="inline-flex text-xs font-semibold px-2.5 py-1 rounded-full bg-ink-100 text-ink-500">Nível ${c.nivel_suporte} de suporte</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div class="bg-white rounded-2xl border border-ink-100 shadow-glass p-5">
+              <h2 class="text-base font-bold text-ink-900 mb-3">Indicadores clínicos</h2>
+              <div class="space-y-3">
+                ${scoreBar({label:"Score de evolução", score:c.evolucao_score})}
+                ${scoreBar({label:"Taxa de comparecimento", score:c.taxa_comparecimento})}
+              </div>
+              <div class="mt-4 pt-3 border-t border-ink-100 text-xs text-ink-500">
+                <p>Última evolução registrada em <span class="font-semibold text-ink-900">${formatDateBR(c.ultima_evolucao_data)}</span></p>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-ink-100 shadow-glass p-5">
+              <h2 class="text-base font-bold text-ink-900 mb-3">Atendimento</h2>
+              <div class="space-y-3">
+                <div>
+                  <p class="text-xs text-ink-500">Clínica responsável</p>
+                  <a href="#/clinicas/${c.clinica_id}" class="text-sm font-semibold text-accent-purple hover:underline">${c.clinica_nome}</a>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                  <div><p class="text-xs text-ink-500">Última sessão</p><p class="text-sm font-semibold text-ink-900">${formatDateBR(c.ultima_sessao)}</p></div>
+                  <div><p class="text-xs text-ink-500">Próxima sessão</p><p class="text-sm font-semibold text-ink-900">${c.proxima_sessao ? formatDateBR(c.proxima_sessao) : "Não agendada"}</p></div>
+                  <div><p class="text-xs text-ink-500">Sessões no mês</p><p class="text-sm font-semibold text-ink-900 tabular-nums">${c.sessoes_mes}</p></div>
+                  <div><p class="text-xs text-ink-500">Aderência</p><p class="text-sm font-semibold text-ink-900 tabular-nums">${c.taxa_comparecimento}%</p></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-ink-100 shadow-glass p-5">
+              <h2 class="text-base font-bold text-ink-900 mb-3">Custos</h2>
+              <div class="space-y-3">
+                <div><p class="text-xs text-ink-500">Custo no mês</p><p class="text-2xl font-bold text-ink-900 tabular-nums">${formatCurrency(c.custo_mes)}</p></div>
+                <div><p class="text-xs text-ink-500">Acumulado no ano</p><p class="text-lg font-semibold text-ink-900 tabular-nums">${formatCurrency(c.custo_acumulado_ano)}</p></div>
+                <div class="pt-2 border-t border-ink-100"><p class="text-xs text-ink-500">Custo por sessão (média): <span class="font-semibold text-ink-900">${formatCurrency(Math.round(c.custo_mes/c.sessoes_mes))}</span></p></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-ink-100 shadow-glass p-5">
+            <div class="flex items-baseline justify-between mb-3">
+              <div>
+                <h2 class="text-base font-bold text-ink-900">Alertas vinculados</h2>
+                <p class="text-xs text-ink-500">Eventos que envolvem esta criança</p>
+              </div>
+            </div>
+            ${ca.length > 0 ? `<div class="space-y-2">${ca.map(a => alertCardHTML(a, true)).join("")}</div>` : `<div class="py-8 text-center text-sm text-ink-500">Nenhum alerta ativo para esta criança.</div>`}
+          </div>
+
+          <div class="bg-amber-50/50 border border-amber-200 rounded-2xl p-4 text-xs text-amber-800">
+            <p class="font-semibold mb-0.5">Dados clínicos restritos</p>
+            <p class="leading-relaxed">Você visualiza apenas dados agregados e indicadores. Conversas, mensagens com a família, documentos pessoais e laudos não estão acessíveis à operadora por padrão. Esta restrição decorre do consentimento concedido pelo responsável legal (LGPD art. 7º e 8º).</p>
+          </div>
+        `;
+      }
+
+      /* ---------- Clínicas ---------- */
+
+      const clinicasFilters = { query: "", uf: "ALL", sortBy: "score" };
+
+      function renderClinicas() {
+        const root = document.getElementById("page-clinicas");
+        const ufs = Array.from(new Set(clinicas.map(c => c.uf)));
+        const sortLabel = { score:"score geral", criancas:"volume", custo:"custo mensal", conformidade:"conformidade GPS" }[clinicasFilters.sortBy];
+        root.innerHTML = `
+          <header class="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h1 class="text-3xl font-bold text-ink-900">Rede credenciada</h1>
+              <p id="clinicas-count" class="text-sm text-ink-500 mt-1"></p>
+            </div>
+          </header>
+
+          <div class="bg-white rounded-2xl p-4 border border-ink-100 shadow-glass">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div>
+                <label class="block text-xs font-semibold text-ink-500 mb-1.5">Buscar</label>
+                <input id="cf-query" type="text" placeholder="Nome da clínica..." value="${clinicasFilters.query}" class="w-full px-3 py-2 text-sm rounded-lg border border-ink-200 focus:border-accent-purple focus:outline-none" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-ink-500 mb-1.5">UF</label>
+                <select id="cf-uf" class="w-full px-3 py-2 text-sm rounded-lg border border-ink-200 focus:border-accent-purple focus:outline-none bg-white">
+                  <option value="ALL">Todas</option>
+                  ${ufs.map(u => `<option value="${u}">${u}</option>`).join("")}
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-ink-500 mb-1.5">Ordenar por</label>
+                <select id="cf-sort" class="w-full px-3 py-2 text-sm rounded-lg border border-ink-200 focus:border-accent-purple focus:outline-none bg-white">
+                  <option value="score">Score geral</option><option value="criancas">Volume de crianças</option><option value="custo">Custo mensal médio</option><option value="conformidade">Conformidade GPS</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div id="clinicas-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+        `;
+        document.getElementById("cf-uf").value = clinicasFilters.uf;
+        document.getElementById("cf-sort").value = clinicasFilters.sortBy;
+        document.getElementById("cf-query").addEventListener("input", (e) => { clinicasFilters.query = e.target.value; renderClinicasGrid(); });
+        document.getElementById("cf-uf").addEventListener("change", (e) => { clinicasFilters.uf = e.target.value; renderClinicasGrid(); });
+        document.getElementById("cf-sort").addEventListener("change", (e) => { clinicasFilters.sortBy = e.target.value; renderClinicasGrid(); });
+        renderClinicasGrid();
+      }
+
+      function renderClinicasGrid() {
+        let list = clinicas.filter(c => {
+          if (clinicasFilters.query && !c.nome.toLowerCase().includes(clinicasFilters.query.toLowerCase())) return false;
+          if (clinicasFilters.uf !== "ALL" && c.uf !== clinicasFilters.uf) return false;
+          return true;
+        });
+        list.sort((a,b) => {
+          switch (clinicasFilters.sortBy) {
+            case "score": return b.score_geral - a.score_geral;
+            case "criancas": return b.criancas_atendidas - a.criancas_atendidas;
+            case "custo": return b.custo_medio_mensal - a.custo_medio_mensal;
+            case "conformidade": return b.taxa_checkin_gps - a.taxa_checkin_gps;
+          }
+        });
+        const sortLabel = { score:"score geral", criancas:"volume", custo:"custo mensal", conformidade:"conformidade GPS" }[clinicasFilters.sortBy];
+        document.getElementById("clinicas-count").innerHTML = `${list.length} de ${clinicas.length} clínicas · Ranking por <span class="font-semibold text-ink-700">${sortLabel}</span>`;
+        document.getElementById("clinicas-grid").innerHTML = list.map((c, i) => `
+          <a href="#/clinicas/${c.id}" class="bg-white rounded-2xl border border-ink-100 shadow-glass p-5 hover:border-accent-purple hover:shadow-glass-md transition-all group">
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <div class="flex items-center gap-3 min-w-0 flex-1">
+                <span class="w-8 h-8 rounded-full bg-ink-50 border border-ink-100 text-ink-700 font-bold text-xs flex items-center justify-center shrink-0">#${i+1}</span>
+                <div class="min-w-0">
+                  <h2 class="text-sm font-bold text-ink-900 group-hover:text-accent-purple leading-tight">${c.nome}</h2>
+                  <p class="text-xs text-ink-400 mt-0.5">${c.cidade}/${c.uf}</p>
+                </div>
+              </div>
+              ${scoreBadge(c.score_geral, "lg")}
+            </div>
+            <div class="grid grid-cols-3 gap-2 my-4">
+              <div class="text-center p-2 rounded-lg bg-ink-50"><p class="text-[10px] uppercase tracking-wide text-ink-500 font-semibold">Evolução</p><p class="text-base font-bold text-ink-900 tabular-nums mt-0.5">${c.score_evolucao}</p></div>
+              <div class="text-center p-2 rounded-lg bg-ink-50"><p class="text-[10px] uppercase tracking-wide text-ink-500 font-semibold">Aderência</p><p class="text-base font-bold text-ink-900 tabular-nums mt-0.5">${c.score_aderencia}</p></div>
+              <div class="text-center p-2 rounded-lg bg-ink-50"><p class="text-[10px] uppercase tracking-wide text-ink-500 font-semibold">Conformidade</p><p class="text-base font-bold text-ink-900 tabular-nums mt-0.5">${c.score_conformidade}</p></div>
+            </div>
+            <div class="flex flex-wrap gap-1 mb-3">
+              ${c.especialidades.map(e => `<span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-accent-purple/10 text-accent-purple">${e}</span>`).join("")}
+            </div>
+            <div class="pt-3 border-t border-ink-100 flex items-center justify-between text-xs">
+              <div><p class="text-ink-500">Crianças</p><p class="font-bold text-ink-900 tabular-nums">${c.criancas_atendidas}</p></div>
+              <div><p class="text-ink-500">Custo médio/mês</p><p class="font-bold text-ink-900 tabular-nums">${formatCurrency(c.custo_medio_mensal)}</p></div>
+              <div><p class="text-ink-500">GPS</p><p class="font-bold text-ink-900 tabular-nums">${c.taxa_checkin_gps}%</p></div>
+            </div>
+          </a>
+        `).join("");
+      }
+
+      /* ---------- Detalhe clínica ---------- */
+
+      function renderClinicaDetail(id) {
+        const root = document.getElementById("page-clinica-detail");
+        const cl = getClinicaById(id);
+        if (!cl) {
+          root.innerHTML = `
+            <div class="bg-white rounded-2xl p-12 border border-ink-100 shadow-glass text-center">
+              <p class="text-sm text-ink-500">Clínica não encontrada.</p>
+              <a href="#/clinicas" class="inline-block mt-3 text-sm font-semibold text-accent-purple hover:underline">← Voltar para clínicas</a>
+            </div>`;
+          return;
+        }
+        const cas = getCriancasByClinica(cl.id);
+        const cAlertas = getAlertasByClinica(cl.id);
+        const iniciaisCl = cl.nome.split(" ").map(w => w[0]).slice(0,2).join("");
+        root.innerHTML = `
+          <a href="#/clinicas" class="inline-flex items-center gap-1 text-sm text-ink-500 hover:text-ink-900">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Voltar para clínicas
+          </a>
+
+          <div class="bg-white rounded-2xl border border-ink-100 shadow-glass p-6">
+            <div class="flex flex-wrap items-start gap-5">
+              <div class="w-20 h-20 rounded-2xl bg-accent-purple flex items-center justify-center text-white font-bold text-2xl shadow-glass shrink-0">${iniciaisCl}</div>
+              <div class="min-w-0 flex-1">
+                <h1 class="text-2xl font-bold text-ink-900">${cl.nome}</h1>
+                <p class="text-sm text-ink-500 mt-0.5">CNPJ ${cl.cnpj} · ${cl.cidade}/${cl.uf}</p>
+                <p class="text-xs text-ink-400 mt-1">Credenciada desde ${formatDateBR(cl.data_credenciamento)} · Responsável: ${cl.contato_responsavel} · ${cl.contato_email}</p>
+                <div class="flex flex-wrap gap-1.5 mt-3">
+                  ${cl.especialidades.map(e => `<span class="inline-flex text-xs font-semibold px-2.5 py-1 rounded-full bg-accent-purple/10 text-accent-purple">${e}</span>`).join("")}
+                  <span class="inline-flex text-xs font-semibold px-2.5 py-1 rounded-full bg-green-50 text-green-700 border border-green-200">Credenciamento ativo</span>
+                </div>
+              </div>
+              <div class="shrink-0 text-center">
+                ${scoreBadge(cl.score_geral, "lg")}
+                <p class="text-[10px] uppercase tracking-wide text-ink-500 font-semibold mt-1">Score geral</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div class="bg-white rounded-2xl border border-ink-100 shadow-glass p-5">
+              <h2 class="text-base font-bold text-ink-900 mb-3">Score detalhado</h2>
+              <div class="space-y-3">
+                ${scoreBar({label:"Evolução clínica (40%)", score:cl.score_evolucao})}
+                ${scoreBar({label:"Aderência terapêutica (30%)", score:cl.score_aderencia})}
+                ${scoreBar({label:"Conformidade GPS (30%)", score:cl.score_conformidade})}
+              </div>
+              <div class="mt-4 pt-3 border-t border-ink-100 text-xs text-ink-500">
+                <p>Score geral é a média ponderada dos três pilares, atualizado mensalmente. Clínicas acima de 85 recebem encaminhamento prioritário; abaixo de 55 entram em revisão de credenciamento.</p>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-ink-100 shadow-glass p-5">
+              <h2 class="text-base font-bold text-ink-900 mb-3">Operação</h2>
+              <div class="grid grid-cols-2 gap-3">
+                <div><p class="text-xs text-ink-500">Crianças atendidas</p><p class="text-2xl font-bold text-ink-900 tabular-nums">${cl.criancas_atendidas}</p></div>
+                <div><p class="text-xs text-ink-500">Custo médio / criança</p><p class="text-2xl font-bold text-ink-900 tabular-nums">${formatCurrency(Math.round(cl.custo_medio_mensal / Math.max(1, cas.length || 5)))}</p></div>
+                <div><p class="text-xs text-ink-500">Conformidade GPS</p><p class="text-2xl font-bold text-ink-900 tabular-nums">${cl.taxa_checkin_gps}%</p></div>
+                <div><p class="text-xs text-ink-500">Custo mensal médio</p><p class="text-2xl font-bold text-ink-900 tabular-nums">${formatCurrency(cl.custo_medio_mensal)}</p></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-ink-100 shadow-glass p-5">
+            <div class="flex items-baseline justify-between mb-3">
+              <div>
+                <h2 class="text-base font-bold text-ink-900">Crianças atendidas pela clínica</h2>
+                <p class="text-xs text-ink-500">${cas.length} crianças da operadora nesta clínica</p>
+              </div>
+            </div>
+            ${cas.length > 0 ? `
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                ${cas.map(c => {
+                  const ev = evolutionColor(c.status_evolucao);
+                  return `
+                    <a href="#/criancas/${c.id}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-ink-50 transition-colors border border-transparent hover:border-ink-100">
+                      <span class="w-9 h-9 rounded-full bg-accent-purple/10 text-accent-purple font-bold text-xs flex items-center justify-center shrink-0">${c.iniciais}</span>
+                      <div class="min-w-0 flex-1">
+                        <p class="text-sm font-semibold text-ink-900 truncate">${c.full_name}</p>
+                        <p class="text-[11px] text-ink-400">${c.idade} anos · ${c.diagnostico}</p>
+                      </div>
+                      <span class="shrink-0 text-[10px] font-semibold px-2 py-0.5 rounded-full ${ev.bg} ${ev.text}">${ev.label}</span>
+                    </a>
+                  `;
+                }).join("")}
+              </div>
+            ` : `<div class="py-6 text-center text-sm text-ink-500">Nenhuma criança desta operadora vinculada a esta clínica.</div>`}
+          </div>
+
+          <div class="bg-white rounded-2xl border border-ink-100 shadow-glass p-5">
+            <h2 class="text-base font-bold text-ink-900 mb-3">Alertas vinculados</h2>
+            ${cAlertas.length > 0 ? `<div class="space-y-2">${cAlertas.map(a => alertCardHTML(a, true)).join("")}</div>` : `<div class="py-6 text-center text-sm text-ink-500">Nenhum alerta ativo para esta clínica.</div>`}
+          </div>
+        `;
+      }
+
+      /* ---------- Alertas ---------- */
+
+      const alertasFilters = { cat: "ALL", sev: "ALL", stat: "ALL" };
+
+      function renderAlertas() {
+        const root = document.getElementById("page-alertas");
+        const counts = {
+          novos: alertas.filter(a => a.status==="NOVO").length,
+          emAnalise: alertas.filter(a => a.status==="EM_ANALISE").length,
+          criticos: alertas.filter(a => a.severidade==="CRITICA").length,
+          fraudes: alertas.filter(a => a.categoria==="FRAUDE").length,
+        };
+        root.innerHTML = `
+          <header class="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h1 class="text-3xl font-bold text-ink-900">Alertas</h1>
+              <p id="alertas-count" class="text-sm text-ink-500 mt-1"></p>
+            </div>
+          </header>
+
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <button type="button" data-filter="novos" class="bg-white rounded-xl p-4 border border-ink-100 shadow-glass text-left hover:border-accent-purple transition-colors">
+              <p class="text-xs font-semibold text-ink-500 uppercase tracking-wide">Novos</p>
+              <p class="text-2xl font-bold text-accent-purple mt-1 tabular-nums">${counts.novos}</p>
+            </button>
+            <button type="button" data-filter="emAnalise" class="bg-white rounded-xl p-4 border border-ink-100 shadow-glass text-left hover:border-blue-300 transition-colors">
+              <p class="text-xs font-semibold text-ink-500 uppercase tracking-wide">Em análise</p>
+              <p class="text-2xl font-bold text-blue-700 mt-1 tabular-nums">${counts.emAnalise}</p>
+            </button>
+            <button type="button" data-filter="criticos" class="bg-white rounded-xl p-4 border border-ink-100 shadow-glass text-left hover:border-red-300 transition-colors">
+              <p class="text-xs font-semibold text-ink-500 uppercase tracking-wide">Críticos</p>
+              <p class="text-2xl font-bold text-red-700 mt-1 tabular-nums">${counts.criticos}</p>
+            </button>
+            <button type="button" data-filter="fraudes" class="bg-white rounded-xl p-4 border border-ink-100 shadow-glass text-left hover:border-orange-300 transition-colors">
+              <p class="text-xs font-semibold text-ink-500 uppercase tracking-wide">Fraude</p>
+              <p class="text-2xl font-bold text-orange-700 mt-1 tabular-nums">${counts.fraudes}</p>
+            </button>
+          </div>
+
+          <div class="bg-white rounded-2xl p-4 border border-ink-100 shadow-glass">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div>
+                <label class="block text-xs font-semibold text-ink-500 mb-1.5">Categoria</label>
+                <select id="af-cat" class="w-full px-3 py-2 text-sm rounded-lg border border-ink-200 focus:border-accent-purple focus:outline-none bg-white">
+                  <option value="ALL">Todas</option><option value="FRAUDE">Fraude</option><option value="EVOLUCAO">Evolução</option><option value="ADERENCIA">Aderência</option><option value="FATURAMENTO">Faturamento</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-ink-500 mb-1.5">Severidade</label>
+                <select id="af-sev" class="w-full px-3 py-2 text-sm rounded-lg border border-ink-200 focus:border-accent-purple focus:outline-none bg-white">
+                  <option value="ALL">Todas</option><option value="CRITICA">Crítica</option><option value="ALTA">Alta</option><option value="MEDIA">Média</option><option value="BAIXA">Baixa</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-ink-500 mb-1.5">Status</label>
+                <select id="af-stat" class="w-full px-3 py-2 text-sm rounded-lg border border-ink-200 focus:border-accent-purple focus:outline-none bg-white">
+                  <option value="ALL">Todos</option><option value="NOVO">Novo</option><option value="EM_ANALISE">Em análise</option><option value="RESOLVIDO">Resolvido</option><option value="IGNORADO">Ignorado</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div id="alertas-list"></div>
+        `;
+
+        document.getElementById("af-cat").value = alertasFilters.cat;
+        document.getElementById("af-sev").value = alertasFilters.sev;
+        document.getElementById("af-stat").value = alertasFilters.stat;
+        document.getElementById("af-cat").addEventListener("change", (e) => { alertasFilters.cat = e.target.value; renderAlertasList(); });
+        document.getElementById("af-sev").addEventListener("change", (e) => { alertasFilters.sev = e.target.value; renderAlertasList(); });
+        document.getElementById("af-stat").addEventListener("change", (e) => { alertasFilters.stat = e.target.value; renderAlertasList(); });
+
+        document.querySelectorAll("[data-filter]").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const f = btn.getAttribute("data-filter");
+            alertasFilters.cat = "ALL"; alertasFilters.sev = "ALL"; alertasFilters.stat = "ALL";
+            if (f === "novos") alertasFilters.stat = "NOVO";
+            else if (f === "emAnalise") alertasFilters.stat = "EM_ANALISE";
+            else if (f === "criticos") alertasFilters.sev = "CRITICA";
+            else if (f === "fraudes") alertasFilters.cat = "FRAUDE";
+            document.getElementById("af-cat").value = alertasFilters.cat;
+            document.getElementById("af-sev").value = alertasFilters.sev;
+            document.getElementById("af-stat").value = alertasFilters.stat;
+            renderAlertasList();
+          });
+        });
+
+        renderAlertasList();
+      }
+
+      function renderAlertasList() {
+        const filtered = alertas.filter(a => {
+          if (alertasFilters.cat !== "ALL" && a.categoria !== alertasFilters.cat) return false;
+          if (alertasFilters.sev !== "ALL" && a.severidade !== alertasFilters.sev) return false;
+          if (alertasFilters.stat !== "ALL" && a.status !== alertasFilters.stat) return false;
+          return true;
+        }).sort((a,b) => {
+          const sev = { CRITICA:4, ALTA:3, MEDIA:2, BAIXA:1 };
+          return sev[b.severidade] - sev[a.severidade];
+        });
+        document.getElementById("alertas-count").textContent = `${filtered.length} de ${alertas.length} alertas · Ordenados por severidade`;
+        document.getElementById("alertas-list").innerHTML = filtered.length > 0
+          ? `<div class="space-y-3">${filtered.map(a => alertCardHTML(a)).join("")}</div>`
+          : `<div class="bg-white rounded-2xl p-12 border border-ink-100 shadow-glass text-center"><p class="text-sm text-ink-500">Nenhum alerta com esses filtros.</p></div>`;
+      }
+
+      /* ---------- Relatórios + Configurações (stubs) ---------- */
+
+      function renderRelatorios() {
+        const root = document.getElementById("page-relatorios");
+        const relatorios = [
+          { titulo:"Relatório mensal de custos por clínica", descricao:"Custo agregado por clínica credenciada, com detalhamento de número de sessões, custo médio por sessão e variação mês-a-mês.", formato:"PDF · Excel", periodo:"Mensal" },
+          { titulo:"Relatório de evolução da carteira", descricao:"Distribuição de status (progredindo / estável / estagnada / regredindo) e principais movimentações no período.", formato:"PDF", periodo:"Trimestral" },
+          { titulo:"Relatório de fraudes detectadas", descricao:"Inventário de alertas de fraude, status de investigação, valor recuperado e tempo médio de resolução.", formato:"PDF · Excel", periodo:"Mensal" },
+          { titulo:"Relatório de aderência terapêutica", descricao:"Taxa de comparecimento por criança, gaps detectados, ações proativas com famílias em risco de abandono.", formato:"Excel", periodo:"Mensal" },
+          { titulo:"Ranking comparativo de clínicas", descricao:"Posicionamento de cada clínica nos 3 pilares (evolução, aderência, conformidade) versus média da rede.", formato:"PDF", periodo:"Trimestral" },
+        ];
+        root.innerHTML = `
+          <header>
+            <h1 class="text-3xl font-bold text-ink-900">Relatórios</h1>
+            <p class="text-sm text-ink-500 mt-1">Documentos exportáveis para sua diretoria, auditoria e prestadores</p>
+          </header>
+
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
+            <p class="text-xs font-bold text-amber-800 uppercase tracking-wide mb-1">Em construção · pós-MVP</p>
+            <p class="text-sm text-amber-800 leading-relaxed">A geração e exportação de relatórios fica para a Fase 3 do roadmap. No MVP, os dados já estão disponíveis no dashboard e nas listas; os relatórios consolidam esses indicadores em PDF/Excel.</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            ${relatorios.map(r => `
+              <div class="bg-white rounded-2xl p-5 border border-ink-100 shadow-glass opacity-75">
+                <div class="flex items-start gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-ink-100 text-ink-500 flex items-center justify-center shrink-0">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <h2 class="text-sm font-bold text-ink-900">${r.titulo}</h2>
+                    <p class="text-xs text-ink-500 mt-1 leading-relaxed">${r.descricao}</p>
+                    <div class="flex flex-wrap items-center gap-2 mt-3 text-[11px]">
+                      <span class="font-semibold px-2 py-0.5 rounded bg-ink-100 text-ink-500">${r.formato}</span>
+                      <span class="font-semibold px-2 py-0.5 rounded bg-ink-100 text-ink-500">${r.periodo}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        `;
+      }
+
+      function renderConfiguracoes() {
+        const root = document.getElementById("page-configuracoes");
+        root.innerHTML = `
+          <header>
+            <h1 class="text-3xl font-bold text-ink-900">Configurações</h1>
+            <p class="text-sm text-ink-500 mt-1">Operadora, regras de alertas e integração com sistemas internos</p>
+          </header>
+
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
+            <p class="text-xs font-bold text-amber-800 uppercase tracking-wide mb-1">Em construção · pós-MVP</p>
+            <p class="text-sm text-amber-800 leading-relaxed">Gestão de usuários da operadora, configuração de thresholds de alertas e integração com sistema externo de faturamento ficam para a Fase 3 do roadmap.</p>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-ink-100 shadow-glass p-5">
+            <h2 class="text-base font-bold text-ink-900 mb-4">Dados da operadora</h2>
+            <dl class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div><dt class="text-xs font-semibold text-ink-500 uppercase tracking-wide">Razão social</dt><dd class="mt-0.5 text-ink-900 font-medium">${operadora.legal_name}</dd></div>
+              <div><dt class="text-xs font-semibold text-ink-500 uppercase tracking-wide">Nome fantasia</dt><dd class="mt-0.5 text-ink-900 font-medium">${operadora.name}</dd></div>
+              <div><dt class="text-xs font-semibold text-ink-500 uppercase tracking-wide">CNPJ</dt><dd class="mt-0.5 text-ink-900 font-medium tabular-nums">${operadora.cnpj}</dd></div>
+              <div><dt class="text-xs font-semibold text-ink-500 uppercase tracking-wide">Registro ANS</dt><dd class="mt-0.5 text-ink-900 font-medium tabular-nums">${operadora.ans_code}</dd></div>
+              <div><dt class="text-xs font-semibold text-ink-500 uppercase tracking-wide">Vidas ativas</dt><dd class="mt-0.5 text-ink-900 font-medium tabular-nums">${operadora.vidas_ativas}</dd></div>
+              <div><dt class="text-xs font-semibold text-ink-500 uppercase tracking-wide">Contratos vigentes</dt><dd class="mt-0.5 text-ink-900 font-medium tabular-nums">${operadora.contratos_vigentes}</dd></div>
+            </dl>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-ink-100 shadow-glass p-5">
+            <h2 class="text-base font-bold text-ink-900 mb-3">Regras de alertas (somente leitura)</h2>
+            <p class="text-xs text-ink-500 mb-4">Thresholds padrão do CADU. A personalização por operadora será liberada na Fase 3.</p>
+            <ul class="space-y-2 text-sm">
+              <li class="flex items-start gap-3 p-3 rounded-lg bg-ink-50">
+                <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-red-100 text-red-700 shrink-0 mt-0.5">Crítica</span>
+                <span class="text-ink-700">GPS inconsistente em 50%+ das sessões → alerta de fraude crítica</span>
+              </li>
+              <li class="flex items-start gap-3 p-3 rounded-lg bg-ink-50">
+                <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-orange-100 text-orange-700 shrink-0 mt-0.5">Alta</span>
+                <span class="text-ink-700">Mesmo volume exato de sessões/mês ao longo de 6+ meses → alerta de faturamento</span>
+              </li>
+              <li class="flex items-start gap-3 p-3 rounded-lg bg-ink-50">
+                <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-orange-100 text-orange-700 shrink-0 mt-0.5">Alta</span>
+                <span class="text-ink-700">Criança sem evolução mensurável há 3+ meses → alerta de revisão de plano</span>
+              </li>
+              <li class="flex items-start gap-3 p-3 rounded-lg bg-ink-50">
+                <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-amber-100 text-amber-700 shrink-0 mt-0.5">Média</span>
+                <span class="text-ink-700">3+ faltas consecutivas → alerta de aderência</span>
+              </li>
+              <li class="flex items-start gap-3 p-3 rounded-lg bg-ink-50">
+                <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-amber-100 text-amber-700 shrink-0 mt-0.5">Média</span>
+                <span class="text-ink-700">Custo individual 50%+ acima da média da carteira → alerta de faturamento</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-ink-100 shadow-glass p-5">
+            <h2 class="text-base font-bold text-ink-900 mb-3">Usuários da operadora</h2>
+            <div class="divide-y divide-ink-100">
+              ${[
+                { nome:"Maria Rocha", papel:"Analista Antifraude", email:"maria.rocha@planodemo.local" },
+                { nome:"Pedro Lima", papel:"Coordenador de Terapias", email:"pedro.lima@planodemo.local" },
+                { nome:"Camila Souza", papel:"Auditora", email:"camila.souza@planodemo.local" },
+              ].map(u => `
+                <div class="flex items-center gap-3 py-3">
+                  <div class="w-9 h-9 rounded-full bg-accent-purple/10 text-accent-purple font-bold text-xs flex items-center justify-center shrink-0">${u.nome.split(" ").map(w => w[0]).slice(0,2).join("")}</div>
+                  <div class="min-w-0 flex-1">
+                    <p class="text-sm font-semibold text-ink-900">${u.nome}</p>
+                    <p class="text-xs text-ink-500">${u.email}</p>
+                  </div>
+                  <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-ink-100 text-ink-500">${u.papel}</span>
+                </div>
+              `).join("")}
+            </div>
+            <p class="mt-3 text-xs text-ink-400">No MVP, todos os usuários têm acesso de leitura única. Tiers (admin/analista/auditor) e gestão de convites entram pós-MVP.</p>
+          </div>
+        `;
+      }
+
+      /* =====================================================
+         ROTEAMENTO
+         ===================================================== */
+
+      const PAGES = ["dashboard","criancas","crianca-detail","clinicas","clinica-detail","alertas","relatorios","configuracoes"];
+
+      function showPage(name) {
+        PAGES.forEach(p => {
+          const el = document.getElementById("page-" + p);
+          if (el) el.hidden = (p !== name);
+        });
+        window.scrollTo({ top: 0, behavior: "instant" });
+      }
+
+      function route() {
+        const hash = window.location.hash || "#/";
+        renderNav(hash);
+
+        // Close mobile menu on navigation
+        const mm = document.getElementById("mobile-menu");
+        if (mm && !mm.classList.contains("hidden")) mm.classList.add("hidden");
+
+        if (hash === "#/" || hash === "" || hash === "#") {
+          showPage("dashboard"); renderDashboard(); return;
+        }
+        const parts = hash.replace(/^#\/?/, "").split("/");
+        const root = parts[0];
+        if (root === "criancas") {
+          if (parts[1]) { showPage("crianca-detail"); renderCriancaDetail(parts[1]); }
+          else { showPage("criancas"); renderCriancas(); }
+          return;
+        }
+        if (root === "clinicas") {
+          if (parts[1]) { showPage("clinica-detail"); renderClinicaDetail(parts[1]); }
+          else { showPage("clinicas"); renderClinicas(); }
+          return;
+        }
+        if (root === "alertas") { showPage("alertas"); renderAlertas(); return; }
+        if (root === "relatorios") { showPage("relatorios"); renderRelatorios(); return; }
+        if (root === "configuracoes") { showPage("configuracoes"); renderConfiguracoes(); return; }
+
+        // Fallback
+        showPage("dashboard"); renderDashboard();
+      }
+
+      window.addEventListener("hashchange", route);
+      window.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("mobile-menu-btn").addEventListener("click", () => {
+          document.getElementById("mobile-menu").classList.remove("hidden");
+        });
+        document.getElementById("mobile-menu-close").addEventListener("click", () => {
+          document.getElementById("mobile-menu").classList.add("hidden");
+        });
+        document.getElementById("mobile-menu-backdrop").addEventListener("click", () => {
+          document.getElementById("mobile-menu").classList.add("hidden");
+        });
+        route();
+      });
+    </script>
+  </body>
+</html>
